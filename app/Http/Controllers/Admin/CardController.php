@@ -8,10 +8,10 @@ use Illuminate\Http\Request; // Սա անհրաժեշտ է update-ի համար
 use App\Http\Requests\Admin\StoreCardRequest; // Մեր վավերացման ֆայլը
 use Illuminate\Support\Facades\Storage; // Սա անհրաժեշտ է ֆայլերի հետ աշխատելու համար
 
-// --- ԱՎԵԼԱՑՐԵՔ ԱՅՍ 2 ՏՈՂԸ ---
+// Գրադարաններ QR կոդի համար
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Response;
-// -----------------------------
+
 
 class CardController extends Controller
 {
@@ -99,28 +99,27 @@ class CardController extends Controller
         return redirect()->route('dashboard')->with('success', 'Քարտը հաջողությամբ ստեղծվեց։');
     }
 
-    // --- ԱՎԵԼԱՑՐԵՔ ԱՅՍ ՆՈՐ ՖՈՒՆԿՑԻԱՆ ---
     /**
      * Գեներացնում և ներբեռնում է QR կոդը
      */
     public function downloadQr(BusinessCard $card)
     {
-        // Ստեղծում ենք հղումը, օրինակ՝ http://localhost:8000/hakob
+        // Ստեղծում ենք հղումը
         $url = route('card.public.show', $card);
 
-        // Գեներացնում ենք PNG ֆորմատի QR կոդ
-        $qrCode = QrCode::format('png')->size(300)->margin(1)->generate($url);
+        // *** ՈՒՂՂՈՒՄԸ ԱՅՍՏԵՂ Է ***
+        // Գեներացնում ենք SVG ֆորմատի QR կոդ (սա imagick ՉԻ պահանջում)
+        $qrCode = QrCode::format('svg')->size(300)->margin(1)->generate($url);
 
-        // Ստեղծում ենք ֆայլի անունը, օրինակ՝ hakob-qr-code.png
-        $filename = $card->slug . '-qr-code.png';
+        // Փոխում ենք ֆայլի անունը .svg-ի
+        $filename = $card->slug . '-qr-code.svg';
 
-        // Վերադարձնում ենք պատասխանը որպես ներբեռնվող ֆայլ
+        // Փոխում ենք Content-Type-ը image/svg+xml-ի
         return Response::make($qrCode, 200, [
-            'Content-Type' => 'image/png',
+            'Content-Type' => 'image/svg+xml',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
     }
-    // ------------------------------------
 
 
     /**
