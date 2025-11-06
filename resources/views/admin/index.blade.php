@@ -38,11 +38,7 @@
                 </div>
             @else
                 <!-- Եթե քարտեր կան, ցուցադրում ենք ցանցը -->
-                <!-- 
-                  ՓՈՓՈԽՈՒԹՅՈՒՆ։ 
-                  Ավելացրել եմ xl:grid-cols-4, որպեսզի շատ մեծ էկրանների վրա 4 քարտ տեղավորվի։
-                -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     
                     <!-- Ցիկլ յուրաքանչյուր քարտի վրայով -->
                     @foreach ($cards as $card)
@@ -72,12 +68,13 @@
 
                                 <!-- QR Կոդ -->
                                 <div class="flex justify-center items-center p-4 bg-white rounded-lg mt-4 border border-gray-100 dark:border-gray-700">
+                                    
                                     <!-- 
-                                      ՈՒՂՂՈՒՄ։ 
-                                      Հեռացված է ->style('svg')-ը, որն առաջացնում էր սխալ։
-                                      backgroundColor(255, 255, 255, 0)-ն ապահովում է թափանցիկ ֆոն SVG-ի համար։
+                                      *** ՈՒՂՂՈՒՄԸ ԱՅՍՏԵՂ Է ***
+                                      style('svg') փոխարինվել է format('svg')-ով
                                     -->
-                                    {!! QrCode::size(150)->backgroundColor(255, 255, 255, 0)->generate(route('card.public.show', $card)) !!}
+                                    {!! QrCode::size(150)->format('svg')->backgroundColor(255, 255, 255, 0)->generate(route('card.public.show', $card)) !!}
+
                                 </div>
 
                                 <!-- Կոճակների խումբ -->
@@ -107,7 +104,8 @@
                                     <a href="#" class="text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400">
                                         Ջնջել քարտը
                                     </a>
-                                SBA                            </div>
+                                </div>
+                            </div>
                         </div>
                     @endforeach
                 </div>
