@@ -9,14 +9,26 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
+|
+| ՈՒՇԱԴՐՈՒԹՅՈՒՆ: 
+| 1. Auth-ի երթուղիները (login, register) պետք է լինեն վայրի քարտ (wildcard)
+|    երթուղուց առաջ (օրինակ՝ /{card:slug}).
+| 2. Վայրի քարտ երթուղին պետք է լինի ֆայլի ամենավերջում։
+|
 */
 
+// =======================================================================
+// === 1. AUTH ROUTES (Login, Register...) ===
+// =======================================================================
+require __DIR__.'/auth.php';
+
+// Redirect root to dashboard after auth routes are loaded
 Route::get('/', function () {
     return redirect()->route('dashboard'); 
 });
 
 // =======================================================================
-// === ԱԴՄԻՆԻ ԲԱԺԻՆ (ՊԱՇՏՊԱՆՎԱԾ) ===
+// === 2. ԱԴՄԻՆԻ ԲԱԺԻՆ (ՊԱՇՏՊԱՆՎԱԾ) ===
 // =======================================================================
 Route::middleware('auth')->group(function () {
     
@@ -24,10 +36,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [CardController::class, 'index'])->name('dashboard');
     
     // CRUD (Create, Read, Update, Delete)
-    Route::resource('cards', CardController::class);
+    Route::resource('cards', CardController::class)->except(['destroy']);
     
-    // *** ԱՎԵԼԱՑՎԱԾ ՏՈՂ ***
-    // Սա մեր նոր route-ն է QR կոդը ներբեռնելու համար
+    // QR կոդը ներբեռնելու համար
     Route::get('/cards/{card}/qr-download', [CardController::class, 'downloadQr'])->name('cards.qr.download');
     
     // Profile
@@ -37,10 +48,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // =======================================================================
-// === ՀԱՆՐԱՅԻՆ ԲԱԺԻՆ (ԲԱՑ ԲՈԼՈՐԻ ՀԱՄԱՐ) ===
+// === 3. ՀԱՆՐԱՅԻՆ ԲԱԺԻՆ (ՎԱՅՐԻ ՔԱՐՏ - ՊԵՏՔ Է ԼԻՆԻ ԱՄԵՆԱՎԵՐՋՈՒՄ) ===
 // =======================================================================
+// Սա բռնում է բոլոր այն հղումները, որոնք չեն համապատասխանել վերևի երթուղիներին
 Route::get('/{card:slug}', [PublicCardController::class, 'show'])->name('card.public.show');
-
-
-// Auth routes (Login, Register...)
-require __DIR__.'/auth.php';

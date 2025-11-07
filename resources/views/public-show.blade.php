@@ -13,7 +13,8 @@
         /* Հիմնական ոճավորում՝ Figma-ին համապատասխան */
         body {
             /* Կիրառում ենք վերբեռնված ֆոնի նկարը */
-            background-image: url('{{ $card->background_image_path ? Storage::url($card->background_image_path) : '' }}');
+            /* !!! ԱՎԵԼԱՑՎԱԾ Է. Առաջինը կիրառվում է սպիտակ կիսաթափանցիկ գույնի շերտը՝ rgba(255, 255, 255, 0.05) */
+            background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), url('{{ $card->background_image_path ? Storage::url($card->background_image_path) : '' }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -25,6 +26,8 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
+            /* !!! ՆՈՐ. Ավելացրել ենք ներքևի լրացուցիչ տարածք ֆիքսված կոճակի համար */
+            padding-bottom: 100px; 
         }
         
         /* Ստեղծում է RGBA գույնը՝ ադմինից եկած HEX-ից և OPACITY-ից */
@@ -67,11 +70,25 @@
         .feedback-input::placeholder {
             color: #b3b3b3; /* Բաց մոխրագույն placeholder */
         }
+        
+        /* !!! ՆՈՐ. Ֆիքսված կոճակի կոնտեյներ */
+        .fixed-contact-button {
+            position: fixed;
+            bottom: 0; 
+            left: 50%; /* Տեղափոխում ենք կենտրոն */
+            transform: translateX(-50%); /* Հետ ենք քաշում կիսով չափ՝ ճիշտ կենտրոնացման համար */
+            z-index: 50; /* Ապահովում ենք, որ լինի բոլորի վերևում */
+            width: 100%;
+            max-width: 400px; /* Համապատասխանեցնում ենք հիմնական բովանդակության լայնությանը */
+            padding: 1rem;
+            /* background: linear-gradient(to top, #1a1a1a 80%, rgba(26, 26, 26, 0.8) 100%); Թույլ թափանցիկ ֆոն՝ սահուն անցում ապահովելու համար */
+        }
     </style>
 </head>
 <body>
 
-    <div class="relative w-full max-w-md mx-auto pb-20"> <div class="absolute top-0 left-0 right-0 z-0 w-full h-[360px] shadow-2xl" 
+    <div class="relative w-full max-w-md mx-auto pb-20"> 
+        <div class="absolute top-0 left-0 right-0 z-0 w-full h-[360px] shadow-2xl" 
              style="background-color: {{ $logo_bg_rgba }};border-bottom-left-radius: 40%; border-bottom-right-radius: 40%;">
         </div>
 
@@ -132,14 +149,6 @@
 
         </div>
 
-        <div class="relative z-10 text-center px-6 pb-12 mt-4">
-            <a href="#" class="inline-flex items-center justify-center w-full max-w-xs py-3 px-6 rounded-full text-center text-white font-bold uppercase shadow-2xl transition-transform duration-200 hover:scale-[1.02]"
-               style="background-color: {{ $brand_color }};">
-                <i class="fa-solid fa-user-plus mr-2"></i>
-                Add me to the contact list
-            </a>
-        </div>
-        
         <div class="relative z-10 w-full px-6 pt-8">
             
             <h2 class="text-2xl font-bold text-white text-center mb-6 tracking-widest">FEEDBACK</h2>
@@ -159,7 +168,9 @@
                 </div>
             </form>
 
-            <div class="my-10 border-t border-gray-700"></div> <h2 class="text-2xl font-bold text-white text-center mb-6 tracking-widest">SHARE MY CARD</h2>
+            <div class="my-10 border-t border-gray-700"></div> 
+            
+            <h2 class="text-2xl font-bold text-white text-center mb-6 tracking-widest">SHARE MY CARD</h2>
             
             <div class="flex justify-center space-x-4 pb-12">
                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" target="_blank" class="w-14 h-14 bg-[#2c2c2c] rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-200">
@@ -177,7 +188,14 @@
             </div>
             
         </div>
-        </div>
-
-</body>
+    </div>
+    
+    <div class="fixed-contact-button text-center">
+        <a href="#" class="inline-flex items-center justify-center w-full max-w-xs py-3 px-6 rounded-full text-center text-white font-bold uppercase shadow-2xl transition-transform duration-200 hover:scale-[1.02]"
+           style="background-color: {{ $brand_color }};">
+            <i class="fa-solid fa-user-plus mr-2"></i>
+            Add me to the contact list
+        </a>
+    </div>
+    </body>
 </html>
