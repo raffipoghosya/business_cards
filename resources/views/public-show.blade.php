@@ -1,3 +1,78 @@
+<?php
+// ... (մնացած PHP կոդը)
+use Illuminate\Support\Facades\Storage; // Ավելացնում ենք Storage-ի կանչը
+use Illuminate\Support\Str;
+
+// ԱՅՍ ԲԼՈԿՆ ԱՊԱՀՈՎՈՒՄ Է, ՈՐ ՖՈՒՆԿՑԻԱՆ ՄԻԱՅՆ ՄԵԿ ԱՆԳԱՄ ՍԱՀՄԱՆՎԻ
+if (!function_exists('generateVCard')) {
+    // Այս ֆունկցիան կօգտագործվի VCard-ը գեներացնելու համար
+    // ՈՒՂՂՈՒՄ: Օգտագործում ենք \App\Models\BusinessCard ամբողջական անունը
+    function generateVCard(\App\Models\BusinessCard $card): string { 
+        $vcard = "BEGIN:VCARD\r\n";
+        $vcard .= "VERSION:3.0\r\n";
+        
+        // Անունը (Title-ը օգտագործում ենք որպես Անուն/Ընկերության անուն)
+        $vcard .= "FN:" . $card->title . "\r\n";
+        $vcard .= "ORG:" . $card->title . "\r\n"; // Օրինակ՝ ընկերության անվանումը
+        
+        // Հավաքում ենք կոնտակտային տվյալները
+        $phone = null;
+        $email = null;
+        $website = null;
+
+        if ($card->links) {
+            foreach ($card->links as $link) {
+                $value = $link['value'];
+                
+                // Ֆիքսելով հեռախոսի և էլ. փոստի դաշտերը
+                switch ($link['key']) {
+                    case 'phone':
+                        $vcard .= "TEL;TYPE=WORK,VOICE:" . $value . "\r\n";
+                        $phone = $value;
+                        break;
+                    case 'mail':
+                        $vcard .= "EMAIL;TYPE=PREF,INTERNET:" . $value . "\r\n";
+                        $email = $value;
+                        break;
+                    case 'website':
+                        $vcard .= "URL;TYPE=Website:" . $value . "\r\n";
+                        $website = $value;
+                        break;
+                    case 'location':
+                        $vcard .= "ADR;TYPE=WORK:" . $value . "\r\n";
+                        break;
+                    // Մնացածը կարող ենք ավելացնել NOTE դաշտում կամ URL-ով
+                    default:
+                        // Քանի որ VCard-ը սահմանափակ է, մյուսները ավելացնում ենք NOTE-ում
+                        // Կոդավորում ենք արժեքը, որպեսզի այն ճիշտ ցուցադրվի 
+                        $safe_value = str_replace(array("\r", "\n", ","), array("", "", "\,"), $value);
+                        $vcard .= "NOTE:{$link['label']}: {$safe_value}\r\n"; 
+                        break;
+                }
+            }
+        }
+
+        // Լոգոն կոդավորում ենք որպես նկար
+        if ($card->logo_path && Storage::disk('public')->exists($card->logo_path)) {
+            $logo_data = base64_encode(Storage::disk('public')->get($card->logo_path));
+            $logo_mime = Storage::disk('public')->mimeType($card->logo_path);
+
+            // Լոգոյի ավելացում VCard-ում (BASE64)
+            // Պետք է ստուգել, թե արդյոք VCard-ը ճիշտ է ընդունում այս ֆորմատը
+            $vcard .= "PHOTO;ENCODING=BASE64;TYPE=" . $logo_mime . ":" . $logo_data . "\r\n";
+        }
+
+        $vcard .= "END:VCARD\r\n";
+        
+        // Կոդավորում ենք URL-ի համար
+        return 'data:text/vcard;charset=utf-8;base64,' . base64_encode($vcard);
+    }
+}
+// ԱՅՍՏԵՂ ՓԱԿՎՈՒՄ Է if (!function_exists) ԲԼՈԿԸ
+
+// Գեներացնում ենք VCard-ի հղումը
+$vcard_link = generateVCard($card);
+?>
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -7,13 +82,10 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
     <style>
         /* Հիմնական ոճավորում՝ Figma-ին համապատասխան */
         body {
             /* Կիրառում ենք վերբեռնված ֆոնի նկարը */
-            /* !!! ԱՎԵԼԱՑՎԱԾ Է. Առաջինը կիրառվում է սպիտակ կիսաթափանցիկ գույնի շերտը՝ rgba(255, 255, 255, 0.05) */
             background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), url('{{ $card->background_image_path ? Storage::url($card->background_image_path) : '' }}');
             background-size: cover;
             background-position: center;
@@ -71,7 +143,15 @@
             color: #b3b3b3; /* Բաց մոխրագույն placeholder */
         }
         
-        /* !!! ՆՈՐ. Ֆիքսված կոճակի կոնտեյներ */
+        /* !!! ՁԵՐ SVG ԻԿՈՆՆԵՐԻ ՀԱՄԱՐ ՈՃԱՎՈՐՈՒՄ */
+        .icon-img {
+            width: 32px; 
+            height: 32px;
+            /* Կիրառում ենք ֆիլտր, որպեսզի սև SVG-ները դառնան սպիտակ, անկախ Brand Color-ից: */
+            filter: brightness(0) invert(1); 
+        }
+        
+        /* !!! ՆՈՐ. ՖԻՔՍՎԱԾ ԿՈՃԱԿԻ ԿՈՆՏԵՅՆԵՐ */
         .fixed-contact-button {
             position: fixed;
             bottom: 0; 
@@ -81,7 +161,26 @@
             width: 100%;
             max-width: 400px; /* Համապատասխանեցնում ենք հիմնական բովանդակության լայնությանը */
             padding: 1rem;
-            /* background: linear-gradient(to top, #1a1a1a 80%, rgba(26, 26, 26, 0.8) 100%); Թույլ թափանցիկ ֆոն՝ սահուն անցում ապահովելու համար */
+        }
+
+        /* ՖԻՔՍՎԱԾ ԿՈՃԱԿԻ ԴԻԶԱՅՆ՝ ՆԿԱՐԻՆ ՀԱՄԱՊԱՏԱՍԽԱՆ */
+        .contact-btn {
+            /* ՓՈՓՈԽՈՒԹՅՈՒՆ 1: Օգտագործում ենք Brand Color-ը background-ի համար */
+            background-color: {{ $brand_color }}; 
+            color: white;
+            padding: 1rem 1.5rem; /* Լայն ներքին լցոնում */
+            border-radius: 9999px; /* Իդեալական կլորացված եզրեր */
+            font-weight: 700; /* Կիսաթավ տառատեսակ */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Մուգ ստվեր */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        /* Փոքրիկ իկոնկաների չափի ճշգրտում (եթե անհրաժեշտ է) */
+        .share-icon-img {
+            width: 28px;
+            height: 28px;
+            /* Քանի որ ֆոնը մուգ մոխրագույն է (#2c2c2c), իկոնկաները պետք է լինեն սպիտակ */
+            filter: brightness(0) invert(1);
         }
     </style>
 </head>
@@ -91,9 +190,6 @@
         <div class="absolute top-0 left-0 right-0 z-0 w-full h-[360px] shadow-2xl" 
              style="background-color: {{ $logo_bg_rgba }};border-bottom-left-radius: 40%; border-bottom-right-radius: 40%;">
         </div>
-
-    
-       
 
         <div class="relative z-10 flex flex-col items-center logo-block">
             <div class="logo-background w-48 h-48 rounded-full flex items-center justify-center shadow-lg bg-white p-2">
@@ -115,29 +211,69 @@
                 @if ($card->links)
                     @foreach ($card->links as $link)
                         @php
-                            $iconClass = '';
+                            $iconContent = ''; 
                             $href = $link['value'];
                             $label = $link['label'];
-
-                            // Սահմանում ենք ճիշտ իկոնը և հղումը
+                            $iconPath = 'icons/'; // Ձեր SVG-ների հիմնական ճանապարհը
+                            
+                            // ՖԻՔՍՎԱԾ ԼԵՅԲԼՆԵՐ ԵՎ SVG ԻԿՈՆՆԵՐ
                             switch ($link['key']) {
-                                case 'phone':     $iconClass = 'fa-solid fa-phone'; $href = 'tel:' . $link['value']; $label = 'Phone'; break;
-                                case 'sms':       $iconClass = 'fa-solid fa-message'; $href = 'sms:' . $link['value']; $label = 'SMS'; break;
-                                case 'mail':      $iconClass = 'fa-solid fa-envelope'; $href = 'mailto:' . $link['value']; $label = 'Mail'; break;
-                                case 'website':   $iconClass = 'fa-solid fa-globe'; break;
-                                case 'whatsapp':  $iconClass = 'fa-brands fa-whatsapp'; $href = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $link['value']); $label = 'WhatsApp'; break;
-                                case 'viber':     $iconClass = 'fa-brands fa-viber'; $href = 'viber://chat?number=' . preg_replace('/[^0-9]/', '', $link['value']); $label = 'Viber'; break;
-                                case 'facebook':  $iconClass = 'fa-brands fa-facebook-f'; break;
-                                case 'messenger': $iconClass = 'fa-brands fa-facebook-messenger'; break;
-                                case 'instagram': $iconClass = 'fa-brands fa-instagram'; break;
-                                case 'location':  $iconClass = 'fa-solid fa-location-dot'; break;
+                                case 'phone':     
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'telephone.svg') . '" alt="Phone Icon" class="icon-img">'; 
+                                    $href = 'tel:' . $link['value']; 
+                                    $label = 'Phone'; 
+                                    break;
+                                case 'sms':       
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'sms.svg') . '" alt="SMS Icon" class="icon-img">';
+                                    $href = 'sms:' . $link['value']; 
+                                    $label = 'SMS'; 
+                                    break;
+                                case 'mail':      
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'mail.svg') . '" alt="Mail Icon" class="icon-img">'; 
+                                    $href = 'mailto:' . $link['value']; 
+                                    $label = 'Mail'; 
+                                    break;
+                                case 'website':   
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'web.svg') . '" alt="Website Icon" class="icon-img">'; 
+                                    $label = 'Website'; 
+                                    break; 
+                                case 'whatsapp':  
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'whatsapp.svg') . '" alt="WhatsApp Icon" class="icon-img">'; 
+                                    $href = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $link['value']); 
+                                    $label = 'WhatsApp'; 
+                                    break;
+                                case 'viber':     
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'viber.svg') . '" alt="Viber Icon" class="icon-img">'; 
+                                    $href = 'viber://chat?number=' . preg_replace('/[^0-9]/', '', $link['value']); 
+                                    $label = 'Viber'; 
+                                    break;
+                                case 'facebook':  
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'facebook.svg') . '" alt="Facebook Icon" class="icon-img">'; 
+                                    $label = 'Facebook'; 
+                                    break;
+                                case 'messenger': 
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'massenger.svg') . '" alt="Messenger Icon" class="icon-img">'; 
+                                    $label = 'Messenger'; 
+                                    break;
+                                case 'instagram': 
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'instagram.svg') . '" alt="Instagram Icon" class="icon-img">'; 
+                                    $label = 'Instagram'; 
+                                    break;
+                                case 'location':  
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'location.svg') . '" alt="Location Icon" class="icon-img">'; 
+                                    $label = 'Location'; 
+                                    break; 
+                                default: 
+                                    // Ոչ ստանդարտ դաշտերի համար, օգտագործում ենք դեֆոլտ իկոնկա
+                                    $iconContent = '<img src="' . Storage::url($iconPath . 'default-link.svg') . '" alt="Link Icon" class="icon-img">'; 
+                                    $label = $link['label'] ?? 'Link';
                             }
                         @endphp
 
                         <a href="{{ $href }}" target="_blank" class="flex flex-col items-center text-decoration-none group">
                             <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-2 transition-transform duration-200 shadow-xl" 
                                  style="background-color: {{ $brand_color }};">
-                                <i class="{{ $iconClass }} text-white text-3xl"></i>
+                                {!! $iconContent !!}
                             </div>
                             <span class="text-sm font-bold mt-1" style="color: {{ $brand_color }};">
                                 {{ $label }}
@@ -173,29 +309,38 @@
             <h2 class="text-2xl font-bold text-white text-center mb-6 tracking-widest">SHARE MY CARD</h2>
             
             <div class="flex justify-center space-x-4 pb-12">
+                <!-- Փոփոխություն: Օգտագործում ենք Ձեր SVG ֆայլերը Share կոճակների համար -->
                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" target="_blank" class="w-14 h-14 bg-[#2c2c2c] rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-200">
-                    <i class="fa-brands fa-facebook-f text-white text-xl"></i>
+                    <img src="{{ Storage::url('icons/facebook.svg') }}" alt="Facebook Share Icon" class="share-icon-img">
                 </a>
                 <a href="https://wa.me/?text=Check%20out%20my%20digital%20card:%20{{ url()->current() }}" target="_blank" class="w-14 h-14 bg-[#2c2c2c] rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-200">
-                    <i class="fa-brands fa-whatsapp text-white text-xl"></i>
+                    <img src="{{ Storage::url('icons/whatsapp.svg') }}" alt="WhatsApp Share Icon" class="share-icon-img">
                 </a>
-                <a href="#" class="w-14 h-14 bg-[#2c2c2c] rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-200">
-                    <i class="fa-brands fa-instagram text-white text-xl"></i>
+                <a href="https://www.instagram.com/share?url={{ urlencode(url()->current()) }}" target="_blank" class="w-14 h-14 bg-[#2c2c2c] rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-200">
+                    <img src="{{ Storage::url('icons/instagram.svg') }}" alt="Instagram Share Icon" class="share-icon-img">
                 </a>
                 <a href="sms:?body=Check%20out%20my%20digital%20card:%20{{ url()->current() }}" class="w-14 h-14 bg-[#2c2c2c] rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-200">
-                    <i class="fa-solid fa-comment-dots text-white text-xl"></i>
+                    <img src="{{ Storage::url('icons/sms.svg') }}" alt="SMS Share Icon" class="share-icon-img">
                 </a>
             </div>
             
         </div>
     </div>
     
+    <!-- ՖԻՔՍՎԱԾ ԿՈՃԱԿԻ ԲԼՈԿ (ԹԱՐՄԱՑՎԱԾ ԻԿՈՆԿԱՅՈՎ ԵՎ ԴԻԶԱՅՆՈՎ) -->
     <div class="fixed-contact-button text-center">
-        <a href="#" class="inline-flex items-center justify-center w-full max-w-xs py-3 px-6 rounded-full text-center text-white font-bold uppercase shadow-2xl transition-transform duration-200 hover:scale-[1.02]"
-           style="background-color: {{ $brand_color }};">
-            <i class="fa-solid fa-user-plus mr-2"></i>
-            Add me to the contact list
+        <!-- Կոճակի href-ը հիմա ունի VCard-ի տվյալներ -->
+        <!-- ՓՈՓՈԽՈՒԹՅՈՒՆ 2: Կիրառել Brand Color-ը background-ի համար -->
+        <a href="{{ $vcard_link }}" download="{{ $card->slug }}.vcf" 
+           class="inline-flex items-center justify-center w-full max-w-[280px] contact-btn transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
+            <!-- Տեղադրում ենք Ձեր SVG իկոնկան -->
+            <img src="{{ Storage::url('icons/add-user.svg') }}" alt="Add User Icon" class="icon-img mr-3"> 
+            <span class="text-lg uppercase tracking-wide">
+                Add me to the contact list
+            </span>
         </a>
     </div>
-    </body>
+    <!-- ՎԵՐՋ. ՖԻՔՍՎԱԾ ԿՈՃԱԿԻ ԲԼՈԿ -->
+
+</body>
 </html>
