@@ -34,6 +34,10 @@
             @else
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach ($cards as $card)
+                        @php
+                            // Ստանում ենք վերնագիրը (եթե array է՝ վերցնում ենք EN, եթե ոչ՝ ինչպես կա)
+                            $displayTitle = is_array($card->title) ? ($card->title['en'] ?? 'No Title') : $card->title;
+                        @endphp
                         <div
                             class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
                             <div class="p-6">
@@ -42,19 +46,19 @@
                                         @if ($card->logo_path)
                                             <img class="h-16 w-16 rounded-full object-cover border-2 border-gray-200"
                                                 src="{{ Storage::url($card->logo_path) }}"
-                                                alt="{{ $card->title }} Logo">
+                                                alt="{{ $displayTitle }} Logo">
                                         @else
                                             <div
                                                 class="h-16 w-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                                                 <span
-                                                    class="text-2xl font-bold text-gray-500 dark:text-gray-300">{{ strtoupper(substr($card->title, 0, 2)) }}</span>
+                                                    class="text-2xl font-bold text-gray-500 dark:text-gray-300">{{ strtoupper(substr($displayTitle, 0, 2)) }}</span>
                                             </div>
                                         @endif
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p
                                             class="text-xl font-bold text-gray-900 dark:text-white truncate">
-                                            {{ $card->title }}</p>
+                                            {{ $displayTitle }}</p>
                                         <p
                                             class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                                             {{ route('card.public.show', $card) }}
@@ -104,7 +108,7 @@
                                 <div class="mt-3 text-center">
                                     <form method="POST" action="{{ route('cards.destroy', $card) }}" 
                                         class="inline"
-                                        onsubmit="return confirm('Վստա՞հ եք, որ ցանկանում եք ջնջել «{{ $card->title }}» քարտը։ Այս գործողությունը անդառնալի է։')">
+                                        onsubmit="return confirm('Վստա՞հ եք, որ ցանկանում եք ջնջել «{{ $displayTitle }}» քարտը։ Այս գործողությունը անդառնալի է։')">
                                         @csrf
                                         @method('DELETE')
                                         

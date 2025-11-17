@@ -14,16 +14,16 @@ class BusinessCard extends Model
      *
      * @var array<int, string>
      */
-    // Այստեղ ավելացնում ենք մեր բոլոր դաշտերը
     protected $fillable = [
         'title',
+        'subtitle', // Ավելացրել ենք ենթավերնագիրը
         'slug',
         'brand_color',
         'logo_bg_color',
         'logo_bg_opacity',
         'logo_path',
         'background_image_path',
-        'links', // Ավելացնում ենք սա
+        'links',
     ];
 
     /**
@@ -31,8 +31,9 @@ class BusinessCard extends Model
      *
      * @var array<string, string>
      */
-    // Ավելացնում ենք սա՝ ՏԲ-ի հետ ճիշտ աշխատելու համար
     protected $casts = [
-        'links' => 'array',
+        'title' => 'array',     // JSON (բազմալեզու)
+        'subtitle' => 'array',  // JSON (բազմալեզու)
+        'links' => 'array',     // JSON (հղումների ցուցակ)
     ];
 }

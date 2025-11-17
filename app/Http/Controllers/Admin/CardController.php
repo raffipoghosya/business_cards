@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\BusinessCard;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request; // Հիմա սա մեզ պետք է
+use Illuminate\Http\Request;
 use App\Http\Requests\Admin\StoreCardRequest; 
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Response;
 
 class CardController extends Controller
 {
-    // Սահմանում ենք մեր հղումների ցանկը մեկ տեղում, որպեսզի կրկնօրինակում չլինի
+    // Սահմանում ենք մեր հղումների ցանկը մեկ տեղում
     private $availableLinks = [
         'phone'     => 'Phone',
         'sms'       => 'SMS',
@@ -40,7 +40,6 @@ class CardController extends Controller
      */
     public function create()
     {
-        // Փոխանցում ենք հղումների ցանկը view-ին
         return view('admin.create', ['availableLinks' => $this->availableLinks]);
     }
 
@@ -51,6 +50,7 @@ class CardController extends Controller
     public function store(StoreCardRequest $request)
     {
         $validatedData = $request->validated();
+        // $validatedData-ն այստեղ արդեն պարունակում է 'title' => [...] և 'subtitle' => [...] զանգվածները
 
         if ($request->hasFile('logo')) {
             $validatedData['logo_path'] = $request->file('logo')->store('logos', 'public');
@@ -65,6 +65,7 @@ class CardController extends Controller
         // Սահմանում ենք լոգոյի գույնը
         $validatedData['logo_bg_color'] = $validatedData['brand_color'];
         
+        // Model-ի $casts-ը ավտոմատ կվերածի 'title' և 'subtitle' զանգվածները JSON-ի
         BusinessCard::create($validatedData);
 
         return redirect()->route('dashboard')->with('success', 'Քարտը հաջողությամբ ստեղծվեց։');
@@ -75,11 +76,7 @@ class CardController extends Controller
      */
     public function edit(BusinessCard $card) // Route Model Binding
     {
-        // $card->links-ը արդեն իսկ զանգված է (array), շնորհիվ մեր Model-ի $casts-ի
-        // Բայց այն պարունակում է միայն ակտիվները։ Մենք պետք է այն համեմատենք $availableLinks-ի հետ։
-        // Մեր edit.blade.php-ն արդեն իսկ անում է այս տրամաբանությունը, 
-        // այնպես որ մենք ուղղակի փոխանցում ենք երկուսն էլ։
-        
+        // $card->title-ը և $card->subtitle-ը արդեն իսկ զանգվածներ են $casts-ի շնորհիվ
         return view('admin.edit', [
             'card' => $card,
             'availableLinks' => $this->availableLinks
@@ -92,10 +89,10 @@ class CardController extends Controller
     public function update(StoreCardRequest $request, BusinessCard $card)
     {
         $validatedData = $request->validated();
+        // $validatedData-ն այստեղ արդեն պարունակում է 'title' => [...] և 'subtitle' => [...] զանգվածները
 
-        // Ֆայլի թարմացում (ստուգում ենք՝ արդյոք նոր ֆայլ է վերբեռնվել)
+        // Ֆայլի թարմացում
         if ($request->hasFile('logo')) {
-            // Ջնջում ենք հին ֆայլը, եթե այն գոյություն ունի
             if ($card->logo_path) {
                 Storage::disk('public')->delete($card->logo_path);
             }
@@ -115,7 +112,7 @@ class CardController extends Controller
         // Սահմանում ենք լոգոյի գույնը
         $validatedData['logo_bg_color'] = $validatedData['brand_color'];
 
-        // Թարմացնում ենք մոդելը
+        // Model-ի $casts-ը ավտոմատ կվերածի 'title' և 'subtitle' զանգվածները JSON-ի
         $card->update($validatedData);
 
         return redirect()->route('dashboard')->with('success', 'Քարտը հաջողությամբ թարմացվեց։');
@@ -150,7 +147,7 @@ class CardController extends Controller
             if ($isActive && !empty($value)) {
                 $processedLinks[] = [
                     'key' => $key,
-                    'label' => $label, // Օգտագործում ենք մեր հիմնական լեյբլը
+                    'label' => $label,
                     'value' => $value,
                     'active' => true 
                 ];
@@ -165,14 +162,16 @@ class CardController extends Controller
      */
     public function destroy(BusinessCard $card) // Route Model Binding
     {
-        $cardTitle = $card->title; // Պահպանում ենք անվանումը հաղորդագրության համար
+        // *** ՈՒՂՂՈՒՄԸ ԱՅՍՏԵՂ Է ***
+        // $card->title-ն այժմ զանգված է։ Վերցնում ենք անգլերեն տարբերակը (կամ հայերենը, կամ slug-ը)՝ հաղորդագրության համար։
+        $cardTitle = $card->title['en'] ?? $card->title['hy'] ?? $card->slug; 
 
-        // 1. Ջնջում ենք լոգոն, եթե այն գոյություն ունի
+        // 1. Ջնջում ենք լոգոն
         if ($card->logo_path) {
             Storage::disk('public')->delete($card->logo_path);
         }
 
-        // 2. Ջնջում ենք ֆոնի նկարը, եթե այն գոյություն ունի
+        // 2. Ջնջում ենք ֆոնի նկարը
         if ($card->background_image_path) {
             Storage::disk('public')->delete($card->background_image_path);
         }
