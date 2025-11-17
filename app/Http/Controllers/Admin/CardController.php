@@ -22,6 +22,9 @@ class CardController extends Controller
         'viber'     => 'Viber',
         'facebook'  => 'Facebook',
         'messenger' => 'Messenger',
+        'youtube'   => 'YouTube',   
+        'telegram'  => 'Telegram', 
+        'tiktok'    => 'TikTok',
         'instagram' => 'Instagram',
         'location'  => 'Location',
     ];

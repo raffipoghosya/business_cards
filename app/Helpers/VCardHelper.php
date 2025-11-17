@@ -58,8 +58,15 @@ if (!function_exists('generateVCard')) {
                         case 'instagram':
                             $vcard .= "X-SOCIALPROFILE;type=instagram:" . $value . "\r\n";
                             break;
-                        // Այլ սոցիալական հղումներ կարելի է ավելացնել որպես URL կամ NOTE
-                        default:
+                            case 'youtube':
+                                $vcard .= "X-SOCIALPROFILE;type=youtube:" . $value . "\r\n";
+                                break;
+                            case 'telegram':
+                                $vcard .= "X-SOCIALPROFILE;type=telegram:" . $value . "\r\n";
+                                break;
+                            case 'tiktok':
+                                $vcard .= "X-SOCIALPROFILE;type=tiktok:" . $value . "\r\n";
+                                break;                        default:
                             if (!empty($value)) {
                                 $vcard .= "URL;TYPE=" . ucfirst($key) . ":" . $value . "\r\n";
                             }

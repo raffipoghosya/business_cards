@@ -186,6 +186,20 @@ $vcard_link = generateVCard($card);
                                 case 'instagram':
                                     $iconContent = '<img src="' . asset($iconPath . 'instagram.svg') . '" alt="Instagram Icon" class="icon-img">';
                                     break;
+                                    case 'youtube':
+                                    $iconContent = '<img src="' . asset($iconPath . 'youtube.svg') . '" class="icon-img">';
+                                    break;
+                                case 'telegram':
+                                    $iconContent = '<img src="' . asset($iconPath . 'telegram.svg') . '" class="icon-img">';
+                                    $val = $link['value'];
+                                    if (!str_starts_with($val, 'http')) {
+                                        $val = 'https://t.me/' . str_replace('@', '', $val);
+                                    }
+                                    $href = $val;
+                                    break;
+                                case 'tiktok':
+                                    $iconContent = '<img src="' . asset($iconPath . 'tiktok.svg') . '" class="icon-img">';
+                                    break;
                                 case 'location':
                                     $iconContent = '<img src="' . asset($iconPath . 'location.svg') . '" alt="Location Icon" class="icon-img">';
                                     break;
