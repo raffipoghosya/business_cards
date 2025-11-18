@@ -205,10 +205,9 @@ $vcard_link = generateVCard($card);
                 <p id="display-subtitle"
                    class="text-[14px] font-medium tracking-wide px-6"
                    style="color: #ffffff; opacity: 0.8; font-family: 'Mardoto', sans-serif;
-                          letter-spacing: 0px; margin-top: 0.01rem; margin-left: 27%;
+                          letter-spacing: 0px; margin-top: 0.01rem; margin-left: 23%;
                           max-width: 29ch;
                           display: -webkit-box;
-                          -webkit-line-clamp: 2;
                           -webkit-box-orient: vertical;
                           overflow: hidden;
                           text-overflow: ellipsis;
@@ -262,37 +261,31 @@ $vcard_link = generateVCard($card);
                 @endif
             </div>
 
-            <div class="my-10 border-t border-gray-700/50"></div>
+            <div class="my-5 border-t border-gray-700/50"></div>
 
-            <h2 id="share-text" class="text-xl font-bold text-white text-center mb-6 tracking-widest opacity-90">SHARE MY CARD</h2>
+<h2 id="share-text" class="text-xl font-bold text-white text-center mb-6 tracking-widest opacity-90">SHARE MY CARD</h2>
 
-            <div class="flex justify-center gap-4 pb-4">
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" target="_blank"
-                   class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-                   style="background-color: {{ $icon_bg_rgba }};">
-                    <img src="{{ asset('iconsvg/facebook.svg') }}" alt="Facebook" class="icon-img">
-                </a>
-                
-                <a href="https://wa.me/?text=Check%20out%20my%20digital%20card:%20{{ url()->current() }}" target="_blank"
-                   class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-                   style="background-color: {{ $icon_bg_rgba }};">
-                    <img src="{{ asset('iconsvg/whatsapp.svg') }}" alt="WhatsApp" class="icon-img">
-                </a>
-                
-                <a href="https://www.instagram.com/share?url={{ urlencode(url()->current()) }}" target="_blank"
-                   class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-                   style="background-color: {{ $icon_bg_rgba }};">
-                    <img src="{{ asset('iconsvg/instagram.svg') }}" alt="Instagram" class="icon-img">
-                </a>
-                
-                <a href="sms:?body=Check%20out%20my%20digital%20card:%20{{ url()->current() }}"
-                   class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-                   style="background-color: {{ $icon_bg_rgba }};">
-                    <img src="{{ asset('iconsvg/sms.svg') }}" alt="SMS" class="icon-img">
-                </a>
-            </div>
-            </div>
-    </div>
+<div class="flex justify-center gap-4 pb-4">
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" target="_blank"
+       class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
+       style="background-color: {{ $share_bg_rgba }};"> <img src="{{ asset('iconsvg/facebook.svg') }}" alt="Facebook" class="icon-img">
+    </a>
+
+    <a href="https://wa.me/?text=Check%20out%20my%20digital%20card:%20{{ url()->current() }}" target="_blank"
+       class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
+       style="background-color: {{ $share_bg_rgba }};"> <img src="{{ asset('iconsvg/whatsapp.svg') }}" alt="WhatsApp" class="icon-img">
+    </a>
+
+    <a href="https://www.instagram.com/share?url={{ urlencode(url()->current()) }}" target="_blank"
+       class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
+       style="background-color: {{ $share_bg_rgba }};"> <img src="{{ asset('iconsvg/instagram.svg') }}" alt="Instagram" class="icon-img">
+    </a>
+
+    <a href="sms:?body=Check%20out%20my%20digital%20card:%20{{ url()->current() }}"
+       class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
+       style="background-color: {{ $share_bg_rgba }};"> <img src="{{ asset('iconsvg/sms.svg') }}" alt="SMS" class="icon-img">
+    </a>
+</div>
 
     <div class="fixed-contact-button text-center">
         <a href="{{ $vcard_link }}" download="{{ $card->slug }}.vcf"

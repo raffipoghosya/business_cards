@@ -154,6 +154,37 @@
     </div>
 </div>
 
+
+
+<div class="bg-gray-800 p-6 rounded-2xl border border-gray-700/50 mb-8">
+    <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        Share Buttons Style
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <x-input-label for="share_btn_bg_color" :value="__('Share Button Background')" />
+            <div class="flex items-center gap-3 mt-1">
+                <input type="color" id="share_btn_bg_color_picker"
+                    class="h-10 w-10 rounded cursor-pointer border-0 p-0"
+                    value="#ffffff"
+                    oninput="document.getElementById('share_btn_bg_color').value = this.value">
+                <x-text-input id="share_btn_bg_color" class="block mt-1 w-full" type="text" name="share_btn_bg_color"
+                    value="#ffffff" />
+            </div>
+        </div>
+
+        <div>
+            <x-input-label for="share_btn_bg_opacity" :value="__('Share Button Opacity (%)')" />
+            <div class="flex items-center gap-4 mt-4">
+                <input type="range" id="share_btn_bg_opacity_range" name="share_btn_bg_opacity" min="0" max="100" value="100"
+                    class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    oninput="document.getElementById('share_btn_bg_opacity_val').innerText = this.value + '%'">
+                <span id="share_btn_bg_opacity_val" class="text-white font-mono w-12">100%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
                         <hr class="my-8 border-gray-200">
                         <div class="flex items-center border-b border-gray-200 pb-4 mb-6">
                             <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
