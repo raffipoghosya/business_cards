@@ -27,7 +27,7 @@ class PublicCardController extends Controller
         $icon_bg_rgba = sprintf("rgba(%d, %d, %d, %.2f)", $ri, $gi, $bi, $iconBgOpacity / 100);
 
 
-        // --- 2. SHARE BUTTONS STYLE CALCULATION (Share բաժնի կոճակներ) ---
+        // --- 2. Share Buttons Fon CALCULATION (Share բաժնի կոճակներ) ---
         // Սա նոր ավելացված ֆունկցիոնալն է
         $shareBgColor = $card->share_btn_bg_color ?? '#ffffff';
         $shareBgOpacity = $card->share_btn_bg_opacity ?? 100;

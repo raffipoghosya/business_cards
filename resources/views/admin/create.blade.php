@@ -67,7 +67,7 @@
                             </div>
 
                             <div>
-                                <label for="background_image" class="block font-semibold text-xl text-black dark:text-black">Վերբեռնել ֆոնի նկար</label>
+                                <label for="background_image" class="block font-semibold text-xl text-black dark:text-black">Վերբեռնել  Ընդանուր ետնանկար</label>
                                 <input id="background_image" type="file" name="background_image" class="block w-full mt-1 text-sm text-gray-700 dark:text-gray-700 border border-gray-300 rounded-md cursor-pointer bg-white dark:bg-white focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:font-medium file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300">
                                 <x-input-error :messages="$errors->get('background_image')" class="mt-2" />
                             </div>
@@ -81,7 +81,7 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label for="brand_color" class="block font-semibold text-xl text-black dark:text-black">Հիմնական Գույն (Իկոններ, Տեքստեր, Լոգոյի Ֆոն)</label>
+                                <label for="brand_color" class="block font-semibold text-xl text-black dark:text-black">Լոգոյի տակի ֆոն</label>
                                 <input id="brand_color" type="color" name="brand_color" value="{{ old('brand_color', '#1E88E5') }}" class="block mt-1 w-full h-12 border-gray-300 dark:bg-white focus:border-gray-500 focus:ring-gray-500 rounded-md shadow-sm cursor-pointer">
                                 <x-input-error :messages="$errors->get('brand_color')" class="mt-2" />
                             </div>
@@ -131,7 +131,7 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
-        <label for="bg_overlay_color" class="block font-semibold text-xl text-black dark:text-black">Ֆոնի մգացման գույն</label>
+        <label for="bg_overlay_color" class="block font-semibold text-xl text-black dark:text-black">ընդանուր ֆոնի գույն</label>
         <input id="bg_overlay_color" type="color" name="bg_overlay_color" 
                value="{{ old('bg_overlay_color', $card->bg_overlay_color ?? '#151212') }}" 
                class="block mt-1 w-full h-12 border-gray-300 dark:bg-white focus:border-gray-500 focus:ring-gray-500 rounded-md shadow-sm cursor-pointer">
@@ -158,7 +158,7 @@
 
 <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700/50 mb-8">
     <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-        Share Buttons Style
+        Share Buttons Fon
     </h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -174,7 +174,7 @@
         </div>
 
         <div>
-            <x-input-label for="share_btn_bg_opacity" :value="__('Share Button Opacity (%)')" />
+            <x-input-label for="share_btn_bg_opacity" :value="__('Share Buttons Fon թափանցիկություն')" />
             <div class="flex items-center gap-4 mt-4">
                 <input type="range" id="share_btn_bg_opacity_range" name="share_btn_bg_opacity" min="0" max="100" value="100"
                     class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
