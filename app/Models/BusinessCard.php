@@ -39,6 +39,6 @@ class BusinessCard extends Model
     protected $casts = [
         'title' => 'array',     // JSON (բազմալեզու)
         'subtitle' => 'array',  // JSON (բազմալեզու)
-        'links' => 'array',     // JSON (հղումների ցուցակ)
+        'links' => 'array',     // JSON (Հղում URL ADRESների ցուցակ)
     ];
 }

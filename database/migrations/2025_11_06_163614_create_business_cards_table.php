@@ -20,7 +20,7 @@ return new class extends Migration
             // Սա URL-ի մասն է (domain/adidas), պետք է լինի ունիկալ
             $table->string('slug')->unique(); 
             
-            // Պատկերների հղումները
+            // Պատկերների Հղում URL ADRESները
             $table->string('logo_path')->nullable();
             $table->string('background_image_path')->nullable();
             
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('logo_bg_color')->default('#000000'); // Լոգոյի ֆոնի գույնը
             $table->double('logo_bg_opacity', 3, 2)->default(1.0); // Թափանցիկություն (0.00-ից 1.00)
     
-            // Բոլոր իկոնները և նրանց հղումները կպահենք այստեղ
+            // Բոլոր իկոնները և նրանց Հղում URL ADRESները կպահենք այստեղ
             $table->json('links')->nullable(); 
             
             $table->timestamps();

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Response;
 
 class CardController extends Controller
 {
-    // Սահմանում ենք մեր հղումների ցանկը մեկ տեղում
+    // Սահմանում ենք մեր Հղում URL ADRESների ցանկը մեկ տեղում
     private $availableLinks = [
         'phone'     => 'Phone',
         'sms'       => 'SMS',
@@ -62,7 +62,7 @@ class CardController extends Controller
             $validatedData['background_image_path'] = $request->file('background_image')->store('backgrounds', 'public');
         }
 
-        // Մշակում ենք հղումները
+        // Մշակում ենք Հղում URL ADRESները
         $validatedData['links'] = $this->processLinks($validatedData['links'] ?? []);
         
         // Սահմանում ենք լոգոյի գույնը
@@ -109,7 +109,7 @@ class CardController extends Controller
             $validatedData['background_image_path'] = $request->file('background_image')->store('backgrounds', 'public');
         }
 
-        // Մշակում ենք հղումները
+        // Մշակում ենք Հղում URL ADRESները
         $validatedData['links'] = $this->processLinks($validatedData['links'] ?? []);
         
         // Սահմանում ենք լոգոյի գույնը
@@ -138,7 +138,7 @@ class CardController extends Controller
     }
 
     /**
-     * Օգնող ֆունկցիա՝ հղումները մշակելու համար
+     * Օգնող ֆունկցիա՝ Հղում URL ADRESները մշակելու համար
      */
     private function processLinks(array $inputLinks): array
     {

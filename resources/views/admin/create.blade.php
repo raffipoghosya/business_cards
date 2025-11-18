@@ -27,7 +27,7 @@
                                 <x-input-error :messages="$errors->get('title.en')" class="mt-2" />
                             </div>
                             <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
-                                <label for="subtitle_en" class="block font-semibold text-xl text-indigo-900">Ենթավերնագիր (English)</label>
+                                <label for="subtitle_en" class="block font-semibold text-xl text-indigo-900">Բնորոշում (English)</label>
                                 <input id="subtitle_en" class="block mt-1 w-full bg-white border-indigo-300 text-base text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" type="text" name="subtitle[en]" value="{{ old('subtitle.en') }}">
                                 <x-input-error :messages="$errors->get('subtitle.en')" class="mt-2" />
                             </div>
@@ -38,7 +38,7 @@
                                 <x-input-error :messages="$errors->get('title.ru')" class="mt-2" />
                             </div>
                             <div class="bg-orange-50 p-4 rounded-lg border border-orange-100">
-                                <label for="subtitle_ru" class="block font-semibold text-xl text-orange-900">Ենթավերնագիր (Russian)</label>
+                                <label for="subtitle_ru" class="block font-semibold text-xl text-orange-900">Բնորոշում (Russian)</label>
                                 <input id="subtitle_ru" class="block mt-1 w-full bg-white border-orange-300 text-base text-gray-900 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm" type="text" name="subtitle[ru]" value="{{ old('subtitle.ru') }}">
                                 <x-input-error :messages="$errors->get('subtitle.ru')" class="mt-2" />
                             </div>
@@ -49,13 +49,13 @@
                                 <x-input-error :messages="$errors->get('title.hy')" class="mt-2" />
                             </div>
                             <div class="bg-red-50 p-4 rounded-lg border border-red-100">
-                                <label for="subtitle_hy" class="block font-semibold text-xl text-red-900">Ենթավերնագիր (Armenian)</label>
+                                <label for="subtitle_hy" class="block font-semibold text-xl text-red-900">Բնորոշում (Armenian)</label>
                                 <input id="subtitle_hy" class="block mt-1 w-full bg-white border-red-300 text-base text-gray-900 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm" type="text" name="subtitle[hy]" value="{{ old('subtitle.hy') }}">
                                 <x-input-error :messages="$errors->get('subtitle.hy')" class="mt-2" />
                             </div>
 
                             <div class="md:col-span-2 mt-4">
-                                <label for="slug" class="block font-semibold text-xl text-black dark:text-black">Հղում (Slug) (Օրինակ՝ flexitree)</label>
+                                <label for="slug" class="block font-semibold text-xl text-black dark:text-black">Հղում ( URL ADRESS)</label>
                                 <input id="slug" class="block mt-1 w-full bg-white dark:bg-white border-gray-300 text-base text-gray-900 dark:text-gray-900 focus:border-gray-500 focus:ring-gray-500 rounded-md shadow-sm" type="text" name="slug" value="{{ old('slug') }}" required>
                                 <x-input-error :messages="$errors->get('slug')" class="mt-2" />
                             </div>
@@ -157,7 +157,7 @@
                         <hr class="my-8 border-gray-200">
                         <div class="flex items-center border-b border-gray-200 pb-4 mb-6">
                             <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
-                            <h3 class="ml-2 text-2xl font-semibold text-black dark:text-black">Կոնտակտային հղումներ</h3>
+                            <h3 class="ml-2 text-2xl font-semibold text-black dark:text-black">Կոնտակտային Հղում URL ADRESներ</h3>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

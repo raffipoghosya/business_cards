@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('business_cards', function (Blueprint $table) {
             // Վերնագիրը դարձնում ենք text, որպեսզի JSON տեղավորվի
             $table->text('title')->change();
-            // Ավելացնում ենք ենթավերնագիրը
+            // Ավելացնում ենք Բնորոշումը
             $table->text('subtitle')->nullable()->after('title');
         });
     }
