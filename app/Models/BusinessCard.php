@@ -20,6 +20,8 @@ class BusinessCard extends Model
         'subtitle',
         'slug',
         'brand_color',
+        'icon_bg_color',  
+        'icon_bg_opacity',
         'logo_bg_color',
         'logo_bg_opacity',
         'logo_path',

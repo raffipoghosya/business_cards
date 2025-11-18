@@ -50,6 +50,9 @@ class StoreCardRequest extends FormRequest
             'brand_color' => 'required|string|size:7|starts_with:#',
             'logo_bg_opacity' => 'required|numeric|min:0|max:1', 
             'title_color' => 'required|string|size:7|starts_with:#',
+
+            'icon_bg_color' => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'icon_bg_opacity' => ['nullable', 'numeric', 'min:0', 'max:1'],
             
             // Հղումներ
             'links' => 'nullable|array', 

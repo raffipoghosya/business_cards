@@ -33,9 +33,19 @@ $vcard_link = generateVCard($card);
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @php
+            // 1. Brand Color Logic
             list($r, $g, $b) = sscanf($card->brand_color, "#%02x%02x%02x");
             $logo_bg_rgba = "rgba($r, $g, $b, " . $card->logo_bg_opacity . ")";
             $brand_color = $card->brand_color;
+
+            // 2. --- ՆՈՐ ՄԱՍ: Icon Background Logic ---
+            // Եթե բազայում դաշտը դատարկ է, վերցնում ենք default արժեք (սպիտակ կամ brand_color)
+            $iconColorHex = $card->icon_bg_color ?? '#ffffff'; 
+            $iconOpacity = $card->icon_bg_opacity ?? 1.0;
+
+            // Վերածում ենք RGBA-ի
+            list($ir, $ig, $ib) = sscanf($iconColorHex, "#%02x%02x%02x");
+            $icon_bg_rgba = "rgba($ir, $ig, $ib, " . $iconOpacity . ")";
         @endphp
 
         body {
@@ -45,7 +55,7 @@ $vcard_link = generateVCard($card);
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            font-family: 'Mardoto', Arial, sans-serif; /* Added Mardoto as default for consistent look */
+            font-family: 'Mardoto', Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -74,8 +84,12 @@ $vcard_link = generateVCard($card);
         .logo-block { padding-top: 8vh; }
 
         .icon-img {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
+            /* Կարևոր է՝ եթե ընտրում եք սպիտակ ֆոն, ապա իկոնկան պետք է լինի սև:
+               Այս պահին դրված է invert(1) (սպիտակ):
+               Եթե ադմինից ընտրեք մուգ գույնի ֆոն, սա լավ է: 
+               Եթե ընտրեք սպիտակ ֆոն, իկոնկան չի երևա: */
             filter: brightness(0) invert(1);
         }
         .fixed-contact-button {
@@ -89,22 +103,22 @@ $vcard_link = generateVCard($card);
             padding: 1rem;
         }
         
-        /* --- Փոփոխված մասը (Նոր Լեզվի կոճակներ) --- */
+        /* --- Լեզվի կոճակներ --- */
         .lang-switcher-container {
             display: flex;
             align-items: center;
-            gap: 20px; /* Հեռավորություն լեզուների միջև */
+            gap: 20px;
         }
 
         .lang-btn {
             background: transparent;
             border: none;
             padding: 0;
-            font-family: 'Mardoto', sans-serif; /* Կամ ձեր նախընտրած ֆոնտը */
+            font-family: 'Mardoto', sans-serif;
             font-weight: 600;
             font-size: 18px; 
             text-transform: uppercase;
-            color: #7a7a7a; /* Մոխրագույն՝ ոչ ակտիվ վիճակի համար */
+            color: #7a7a7a;
             cursor: pointer;
             position: relative;
             transition: color 0.3s ease;
@@ -115,20 +129,18 @@ $vcard_link = generateVCard($card);
             color: #bfbfbf;
         }
 
-        /* Ակտիվ վիճակ */
         .lang-btn.active {
-            color: #ffffff; /* Սպիտակ գույն */
+            color: #ffffff;
             font-weight: 700;
         }
 
-        /* Սպիտակ գիծը ներքևում */
         .lang-btn.active::after {
             content: '';
             position: absolute;
             left: 0;
-            bottom: -8px; /* Գծի հեռավորությունը տեքստից */
+            bottom: -8px;
             width: 100%;
-            height: 2px; /* Գծի հաստությունը */
+            height: 2px;
             background-color: #ffffff;
         }
     </style>
@@ -157,7 +169,7 @@ $vcard_link = generateVCard($card);
         </div>
 
         <div class="absolute top-6 left-6 z-50">
-            <img src="{{ asset('iconsvg/logo.png') }}" alt="Brand Logo" class="h-8 w-auto opacity-90 drop-shadow-md">
+            <img src="{{ asset('iconsvg/logo.png') }}" alt="Brand Logo" class="h-16 w-auto opacity-90 drop-shadow-md">
         </div>
 
         <div class="absolute top-7 right-8 z-50 lang-switcher-container">
@@ -273,10 +285,11 @@ $vcard_link = generateVCard($card);
                         @endphp
 
                         <a href="{{ $href }}" target="_blank" class="flex flex-col items-center text-decoration-none group">
-                            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-2 transition-transform duration-200 shadow-xl hover:scale-110"
-                                 style="background-color: {{ $brand_color }};">
+                            <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-2 transition-transform duration-200 shadow-xl hover:scale-110"
+                                 style="background-color: {{ $icon_bg_rgba }};">
                                 {!! $iconContent !!}
                             </div>
+
                             <span class="text-xs font-bold mt-1 text-center truncate w-full" style="color: {{ $brand_color }};">
                                 {{ $label }}
                             </span>

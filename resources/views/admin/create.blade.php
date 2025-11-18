@@ -92,6 +92,26 @@
                                 <x-input-error :messages="$errors->get('title_color')" class="mt-2" />
                             </div>
 
+
+                            <div>
+    <label for="icon_bg_color" class="block font-semibold text-xl text-black dark:text-black">Իկոնկաների ֆոնի գույն</label>
+    <input id="icon_bg_color" type="color" name="icon_bg_color" value="{{ old('icon_bg_color', '#ffffff') }}" class="block mt-1 w-full h-12 border-gray-300 dark:bg-white focus:border-gray-500 focus:ring-gray-500 rounded-md shadow-sm cursor-pointer">
+    <x-input-error :messages="$errors->get('icon_bg_color')" class="mt-2" />
+</div>
+
+<div>
+    <label for="icon_bg_opacity" id="icon_bg_opacity_label" class="block font-semibold text-xl text-black dark:text-black">Իկոնկաների ֆոնի թափանցիկություն: {{ old('icon_bg_opacity', 1.0) }}</label>
+    <input 
+        id="icon_bg_opacity" 
+        type="range" 
+        name="icon_bg_opacity" 
+        value="{{ old('icon_bg_opacity', 1.0) }}" 
+        min="0" max="1" step="0.01" 
+        class="block mt-4 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-600"
+        oninput="updateIconOpacityLabel(this.value)">
+    <x-input-error :messages="$errors->get('icon_bg_opacity')" class="mt-2" />
+</div>
+
                             <div>
                                 <label for="logo_bg_opacity" id="logo_bg_opacity_label" class="block font-semibold text-xl text-black dark:text-black">Լոգոյի ֆոնի թափանցիկություն: {{ old('logo_bg_opacity', 1.0) }}</label>
                                 <input 
@@ -169,5 +189,39 @@
                 updateOpacityLabel(slider.value);
             }
         });
+
+
+    // Լոգոյի թափանցիկության ֆունկցիա
+    function updateOpacityLabel(value) {
+        const formattedValue = Number(value).toFixed(2);
+        const label = document.getElementById('logo_bg_opacity_label');
+        if (label) {
+            label.innerText = `Լոգոյի ֆոնի թափանցիկություն: ${formattedValue}`;
+        }
+    }
+
+    // Իկոնկաների թափանցիկության ֆունկցիա (ՆՈՐ)
+    function updateIconOpacityLabel(value) {
+        const formattedValue = Number(value).toFixed(2);
+        const label = document.getElementById('icon_bg_opacity_label');
+        if (label) {
+            label.innerText = `Իկոնկաների ֆոնի թափանցիկություն: ${formattedValue}`;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialization for Logo Opacity
+        const slider = document.getElementById('logo_bg_opacity');
+        if (slider) {
+            updateOpacityLabel(slider.value);
+        }
+
+        // Initialization for Icon Opacity (ՆՈՐ)
+        const iconSlider = document.getElementById('icon_bg_opacity');
+        if (iconSlider) {
+            updateIconOpacityLabel(iconSlider.value);
+        }
+    });
+</script>
     </script>
 </x-app-layout>
