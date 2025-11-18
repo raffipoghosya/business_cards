@@ -16,7 +16,8 @@ class BusinessCard extends Model
      */
     protected $fillable = [
         'title',
-        'subtitle', // Ավելացրել ենք ենթավերնագիրը
+        'title_color',
+        'subtitle',
         'slug',
         'brand_color',
         'logo_bg_color',

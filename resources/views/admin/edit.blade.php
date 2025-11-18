@@ -115,6 +115,11 @@
                                 <input id="brand_color" type="color" name="brand_color" value="{{ old('brand_color', $card->brand_color) }}" class="block mt-1 w-full h-12 border-gray-300 dark:bg-white focus:border-gray-500 focus:ring-gray-500 rounded-md shadow-sm cursor-pointer">
                                 <x-input-error :messages="$errors->get('brand_color')" class="mt-2" />
                             </div>
+                            <div>
+                                <label for="title_color" class="block font-semibold text-xl text-black dark:text-black">Վերնագրի Տեքստի Գույն</label>
+                                <input id="title_color" type="color" name="title_color" value="{{ old('title_color', $card->title_color) }}" class="block mt-1 w-full h-12 border-gray-300 dark:bg-white focus:border-gray-500 focus:ring-gray-500 rounded-md shadow-sm cursor-pointer">
+                                <x-input-error :messages="$errors->get('title_color')" class="mt-2" />
+                            </div>
 
                             <div>
                                 <label for="logo_bg_opacity" id="logo_bg_opacity_label" class="block font-semibold text-xl text-black dark:text-black">Լոգոյի ֆոնի թափանցիկություն: {{ old('logo_bg_opacity', $card->logo_bg_opacity) }}</label>

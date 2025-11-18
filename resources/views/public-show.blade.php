@@ -24,6 +24,9 @@ $vcard_link = generateVCard($card);
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+<link href="https://fonts.cdnfonts.com/css/gunterz" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/mardoto" rel="stylesheet">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $titleEn }}</title>
@@ -36,13 +39,13 @@ $vcard_link = generateVCard($card);
         @endphp
 
         body {
-            background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), url('{{ $card->background_image_path ? Storage::url($card->background_image_path) : '' }}');
+            background-image: linear-gradient(rgba(42, 34, 34, 0.3), rgba(27, 25, 25, 0.3)), url('{{ $card->background_image_path ? Storage::url($card->background_image_path) : '' }}');
             background-color: #1a1a1a;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            font-family: Arial, sans-serif;
+            font-family: 'Mardoto', Arial, sans-serif; /* Added Mardoto as default for consistent look */
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -86,41 +89,81 @@ $vcard_link = generateVCard($card);
             padding: 1rem;
         }
         
-        /* --- Փոփոխված մասը (Լեզվի կոճակներ) --- */
+        /* --- Փոփոխված մասը (Նոր Լեզվի կոճակներ) --- */
+        .lang-switcher-container {
+            display: flex;
+            align-items: center;
+            gap: 20px; /* Հեռավորություն լեզուների միջև */
+        }
+
         .lang-btn {
-            transition: all 0.3s ease;
-            color: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background-color: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(4px);
+            background: transparent;
+            border: none;
+            padding: 0;
+            font-family: 'Mardoto', sans-serif; /* Կամ ձեր նախընտրած ֆոնտը */
+            font-weight: 600;
+            font-size: 18px; 
+            text-transform: uppercase;
+            color: #7a7a7a; /* Մոխրագույն՝ ոչ ակտիվ վիճակի համար */
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+            letter-spacing: 0.5px;
         }
+
         .lang-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
+            color: #bfbfbf;
         }
+
+        /* Ակտիվ վիճակ */
         .lang-btn.active {
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #000;
-            border-color: white;
-            font-weight: 800;
+            color: #ffffff; /* Սպիտակ գույն */
+            font-weight: 700;
+        }
+
+        /* Սպիտակ գիծը ներքևում */
+        .lang-btn.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px; /* Գծի հեռավորությունը տեքստից */
+            width: 100%;
+            height: 2px; /* Գծի հաստությունը */
+            background-color: #ffffff;
         }
     </style>
+    <style>
+@font-face {
+    font-family: 'Gunterz';
+    src: url('/fonts/Gunterz-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gunterz';
+    src: url('/fonts/Gunterz-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+</style>
+
 </head>
 <body>
 
     <div class="relative w-full max-w-md mx-auto pb-20">
-        <div class="absolute top-0 left-0 right-0 z-0 w-full h-[360px] shadow-2xl"
-             style="background-color: {{ $logo_bg_rgba }};border-bottom-left-radius: 40%; border-bottom-right-radius: 40%;">
+        <div class="absolute top-0 left-0 right-0 z-0 w-full h-[400px] shadow-2xl"
+             style="background-color: {{ $logo_bg_rgba }};border-bottom-left-radius: 35%; border-bottom-right-radius: 35%;">
         </div>
 
         <div class="absolute top-6 left-6 z-50">
             <img src="{{ asset('iconsvg/logo.png') }}" alt="Brand Logo" class="h-8 w-auto opacity-90 drop-shadow-md">
         </div>
 
-        <div class="absolute top-6 right-6 z-50 flex space-x-2">
-            <button onclick="switchLanguage('hy')" id="btn-hy" class="lang-btn text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">ՀԱՅ</button>
-            <button onclick="switchLanguage('ru')" id="btn-ru" class="lang-btn text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">RU</button>
-            <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn active text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">EN</button>
+        <div class="absolute top-7 right-8 z-50 lang-switcher-container">
+            <button onclick="switchLanguage('hy')" id="btn-hy" class="lang-btn">ՀԱՅ</button>
+            <button onclick="switchLanguage('ru')" id="btn-ru" class="lang-btn">РУ</button>
+            <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn active">EN</button>
         </div>
 
         <div class="relative z-10 flex flex-col items-center logo-block">
@@ -132,14 +175,35 @@ $vcard_link = generateVCard($card);
                 @endif
             </div>
 
-            <h2 id="display-title" class="mt-5 text-2xl font-bold text-white tracking-widest text-center drop-shadow-md px-4">
-                {{ $titleEn }}
-            </h2>
-            
-            <p id="display-subtitle" class="mt-2 text-base text-white/90 tracking-wide text-center font-medium drop-shadow-sm px-6">
-                {{ $subtitleEn }}
-            </p>
-        </div>
+            <div class="text-center mt-4 w-full">
+            <h1 id="display-title"
+    class="text-2xl tracking-tight drop-shadow-lg font-bold"
+    style="color: {{ $card->title_color ?? '#ffffff' }};
+           font-weight: 700;
+           display: inline-block;
+           max-width: 14ch;
+           white-space: normal;
+           overflow-wrap: break-word;
+           word-break: keep-all;
+           line-height: 0.9;">
+    {{ $titleEn }}
+</h1>
+
+<p id="display-subtitle" 
+   class="text-sm font-medium tracking-wide px-6"
+   style="color: #ffffff; opacity: 0.8; font-family: 'Mardoto', sans-serif;
+          letter-spacing: 0px; margin-top: 0.01rem;
+                    max-width: 25ch;    
+                       margin-left: 27%;
+
+">
+    {{ $subtitleEn }}
+</p>
+
+
+
+            </div>
+            </div>
 
         <div class="relative z-10 w-full px-6 pt-16 mb-12">
 

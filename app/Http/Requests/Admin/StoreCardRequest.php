@@ -41,6 +41,7 @@ class StoreCardRequest extends FormRequest
             // Slug (մնում է նույնը)
             'slug' => 'required|string|alpha_dash|max:255|unique:business_cards,slug,' . $cardId,
             
+            
             // Ֆայլեր
             'logo' => 'nullable|image|max:2048', // max 2MB
             'background_image' => 'nullable|image|max:4096', // max 4MB
@@ -48,6 +49,7 @@ class StoreCardRequest extends FormRequest
             // Դիզայն
             'brand_color' => 'required|string|size:7|starts_with:#',
             'logo_bg_opacity' => 'required|numeric|min:0|max:1', 
+            'title_color' => 'required|string|size:7|starts_with:#',
             
             // Հղումներ
             'links' => 'nullable|array', 
