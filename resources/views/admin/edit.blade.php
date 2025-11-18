@@ -156,6 +156,34 @@
                             </div>
                         </div>
 
+                        <hr class="my-6 border-gray-200">
+<h4 class="text-lg font-medium text-gray-900 mb-4">Ֆոնի մգացման կարգավորումներ (Overlay)</h4>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+        <label for="bg_overlay_color" class="block font-semibold text-xl text-black dark:text-black">Ֆոնի մգացման գույն</label>
+        <input id="bg_overlay_color" type="color" name="bg_overlay_color" 
+               value="{{ old('bg_overlay_color', $card->bg_overlay_color ?? '#151212') }}" 
+               class="block mt-1 w-full h-12 border-gray-300 dark:bg-white focus:border-gray-500 focus:ring-gray-500 rounded-md shadow-sm cursor-pointer">
+        <x-input-error :messages="$errors->get('bg_overlay_color')" class="mt-2" />
+    </div>
+
+    <div>
+        <label for="bg_overlay_opacity" id="bg_overlay_opacity_label" class="block font-semibold text-xl text-black dark:text-black">
+            Մգացման թափանցիկություն: {{ old('bg_overlay_opacity', $card->bg_overlay_opacity ?? 0.3) }}
+        </label>
+        <input 
+            id="bg_overlay_opacity" 
+            type="range" 
+            name="bg_overlay_opacity" 
+            value="{{ old('bg_overlay_opacity', $card->bg_overlay_opacity ?? 0.3) }}" 
+            min="0" max="1" step="0.01" 
+            class="block mt-4 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-600"
+            oninput="document.getElementById('bg_overlay_opacity_label').innerText = 'Մգացման թափանցիկություն: ' + Number(this.value).toFixed(2)">
+        <x-input-error :messages="$errors->get('bg_overlay_opacity')" class="mt-2" />
+    </div>
+</div>
+
                         <hr class="my-8 border-gray-200">
                         <div class="flex items-center border-b border-gray-200 pb-4 mb-6">
                             <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>

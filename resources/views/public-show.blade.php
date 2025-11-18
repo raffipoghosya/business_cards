@@ -24,8 +24,8 @@ $vcard_link = generateVCard($card);
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-<link href="https://fonts.cdnfonts.com/css/gunterz" rel="stylesheet">
-<link href="https://fonts.cdnfonts.com/css/mardoto" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/gunterz" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/mardoto" rel="stylesheet">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,18 +38,25 @@ $vcard_link = generateVCard($card);
             $logo_bg_rgba = "rgba($r, $g, $b, " . $card->logo_bg_opacity . ")";
             $brand_color = $card->brand_color;
 
-            // 2. --- ՆՈՐ ՄԱՍ: Icon Background Logic ---
-            // Եթե բազայում դաշտը դատարկ է, վերցնում ենք default արժեք (սպիտակ կամ brand_color)
+            // 2. Icon Background Logic
             $iconColorHex = $card->icon_bg_color ?? '#ffffff'; 
             $iconOpacity = $card->icon_bg_opacity ?? 1.0;
 
-            // Վերածում ենք RGBA-ի
+            // Վերածում ենք RGBA-ի (Icon)
             list($ir, $ig, $ib) = sscanf($iconColorHex, "#%02x%02x%02x");
             $icon_bg_rgba = "rgba($ir, $ig, $ib, " . $iconOpacity . ")";
+
+            // 3. Background Overlay Logic
+            $bgOverlayHex = $card->bg_overlay_color ?? '#151212'; 
+            $bgOverlayOpacity = $card->bg_overlay_opacity ?? 0.3; 
+
+            // Վերածում ենք RGBA-ի (Background Overlay)
+            list($br, $bg, $bb) = sscanf($bgOverlayHex, "#%02x%02x%02x");
+            $bg_overlay_rgba = "rgba($br, $bg, $bb, " . $bgOverlayOpacity . ")";
         @endphp
 
         body {
-            background-image: linear-gradient(rgba(42, 34, 34, 0.3), rgba(27, 25, 25, 0.3)), url('{{ $card->background_image_path ? Storage::url($card->background_image_path) : '' }}');
+            background-image: linear-gradient({{ $bg_overlay_rgba }}, {{ $bg_overlay_rgba }}), url('{{ $card->background_image_path ? Storage::url($card->background_image_path) : '' }}');
             background-color: #1a1a1a;
             background-size: cover;
             background-position: center;
@@ -60,7 +67,8 @@ $vcard_link = generateVCard($card);
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding-bottom: 100px;
+            /* Պահում ենք քիչ padding, որպեսզի սքրոլը շատ չլինի */
+            padding-bottom: 85px; 
         }
 
         .contact-btn {
@@ -73,11 +81,6 @@ $vcard_link = generateVCard($card);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .share-icon-img {
-            width: 28px;
-            height: 28px;
-            filter: brightness(0) invert(1);
-        }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 4px; }
 
@@ -86,12 +89,9 @@ $vcard_link = generateVCard($card);
         .icon-img {
             width: 40px;
             height: 40px;
-            /* Կարևոր է՝ եթե ընտրում եք սպիտակ ֆոն, ապա իկոնկան պետք է լինի սև:
-               Այս պահին դրված է invert(1) (սպիտակ):
-               Եթե ադմինից ընտրեք մուգ գույնի ֆոն, սա լավ է: 
-               Եթե ընտրեք սպիտակ ֆոն, իկոնկան չի երևա: */
             filter: brightness(0) invert(1);
         }
+        
         .fixed-contact-button {
             position: fixed;
             bottom: 0;
@@ -101,6 +101,8 @@ $vcard_link = generateVCard($card);
             width: 100%;
             max-width: 400px;
             padding: 1rem;
+            /* Ավելացնում ենք թեթև գրադիենտ տակից, որ գեղեցիկ լինի */
+            background: linear-gradient(to top, rgba(26,26,26,1) 0%, rgba(26,26,26,0) 100%);
         }
         
         /* --- Լեզվի կոճակներ --- */
@@ -145,25 +147,24 @@ $vcard_link = generateVCard($card);
         }
     </style>
     <style>
-@font-face {
-    font-family: 'Gunterz';
-    src: url('/fonts/Gunterz-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-}
+        @font-face {
+            font-family: 'Gunterz';
+            src: url('/fonts/Gunterz-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+        }
 
-@font-face {
-    font-family: 'Gunterz';
-    src: url('/fonts/Gunterz-Bold.ttf') format('truetype');
-    font-weight: 700;
-    font-style: normal;
-}
-</style>
-
+        @font-face {
+            font-family: 'Gunterz';
+            src: url('/fonts/Gunterz-Bold.ttf') format('truetype');
+            font-weight: 700;
+            font-style: normal;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="relative w-full max-w-md mx-auto pb-20">
+    <div class="relative w-full max-w-md mx-auto">
         <div class="absolute top-0 left-0 right-0 z-0 w-full h-[400px] shadow-2xl"
              style="background-color: {{ $logo_bg_rgba }};border-bottom-left-radius: 35%; border-bottom-right-radius: 35%;">
         </div>
@@ -188,39 +189,39 @@ $vcard_link = generateVCard($card);
             </div>
 
             <div class="text-center mt-4 w-full">
-            <h1 id="display-title"
-    class="text-2xl tracking-tight drop-shadow-lg font-bold"
-    style="color: {{ $card->title_color ?? '#ffffff' }};
-           font-weight: 700;
-           display: inline-block;
-           max-width: 14ch;
-           white-space: normal;
-           overflow-wrap: break-word;
-           word-break: keep-all;
-           line-height: 0.9;">
-    {{ $titleEn }}
-</h1>
+                <h1 id="display-title"
+                    class="text-2xl tracking-tight drop-shadow-lg font-bold"
+                    style="color: {{ $card->title_color ?? '#ffffff' }};
+                           font-weight: 700;
+                           display: inline-block;
+                           max-width: 14ch;
+                           white-space: normal;
+                           overflow-wrap: break-word;
+                           word-break: keep-all;
+                           line-height: 0.9;">
+                    {{ $titleEn }}
+                </h1>
 
-<p id="display-subtitle" 
-   class="text-sm font-medium tracking-wide px-6"
-   style="color: #ffffff; opacity: 0.8; font-family: 'Mardoto', sans-serif;
-          letter-spacing: 0px; margin-top: 0.01rem;
-                    max-width: 25ch;    
-                       margin-left: 27%;
-
-">
-    {{ $subtitleEn }}
-</p>
-
-
-
+                <p id="display-subtitle"
+                   class="text-[14px] font-medium tracking-wide px-6"
+                   style="color: #ffffff; opacity: 0.8; font-family: 'Mardoto', sans-serif;
+                          letter-spacing: 0px; margin-top: 0.01rem; margin-left: 27%;
+                          max-width: 29ch;
+                          display: -webkit-box;
+                          -webkit-line-clamp: 2;
+                          -webkit-box-orient: vertical;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          min-height: 2.8em;
+                          line-height: 1.4;">
+                    {{ $subtitleEn }}
+                </p>
             </div>
-            </div>
+        </div>
 
         <div class="relative z-10 w-full px-6 pt-16 mb-12">
 
             <div class="w-full grid grid-cols-4 gap-4">
-
                 @if ($card->links)
                     @foreach ($card->links as $link)
                         @php
@@ -230,67 +231,30 @@ $vcard_link = generateVCard($card);
                             $iconPath = 'iconsvg/';
 
                             switch ($link['key']) {
-                                case 'phone':
-                                    $iconContent = '<img src="' . asset($iconPath . 'telephone.svg') . '" alt="Phone Icon" class="icon-img">';
-                                    $href = 'tel:' . $link['value'];
-                                    break;
-                                case 'sms':
-                                    $iconContent = '<img src="' . asset($iconPath . 'sms.svg') . '" alt="SMS Icon" class="icon-img">';
-                                    $href = 'sms:' . $link['value'];
-                                    break;
-                                case 'mail':
-                                    $iconContent = '<img src="' . asset($iconPath . 'mail.svg') . '" alt="Mail Icon" class="icon-img">';
-                                    $href = 'mailto:' . $link['value'];
-                                    break;
-                                case 'website':
-                                    $iconContent = '<img src="' . asset($iconPath . 'web.svg') . '" alt="Website Icon" class="icon-img">';
-                                    break;
-                                case 'whatsapp':
-                                    $iconContent = '<img src="' . asset($iconPath . 'whatsapp.svg') . '" alt="WhatsApp Icon" class="icon-img">';
-                                    $href = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $link['value']);
-                                    break;
-                                case 'viber':
-                                    $iconContent = '<img src="' . asset($iconPath . 'viber.svg') . '" alt="Viber Icon" class="icon-img">';
-                                    $href = 'viber://chat?number=' . preg_replace('/[^0-9]/', '', $link['value']);
-                                    break;
-                                case 'facebook':
-                                    $iconContent = '<img src="' . asset($iconPath . 'facebook.svg') . '" alt="Facebook Icon" class="icon-img">';
-                                    break;
-                                case 'messenger':
-                                    $iconContent = '<img src="' . asset($iconPath . 'massenger.svg') . '" alt="Messenger Icon" class="icon-img">';
-                                    break;
-                                case 'instagram':
-                                    $iconContent = '<img src="' . asset($iconPath . 'instagram.svg') . '" alt="Instagram Icon" class="icon-img">';
-                                    break;
-                                    case 'youtube':
-                                    $iconContent = '<img src="' . asset($iconPath . 'youtube.svg') . '" class="icon-img">';
-                                    break;
-                                case 'telegram':
-                                    $iconContent = '<img src="' . asset($iconPath . 'telegram.svg') . '" class="icon-img">';
-                                    $val = $link['value'];
-                                    if (!str_starts_with($val, 'http')) {
-                                        $val = 'https://t.me/' . str_replace('@', '', $val);
-                                    }
-                                    $href = $val;
-                                    break;
-                                case 'tiktok':
-                                    $iconContent = '<img src="' . asset($iconPath . 'tiktok.svg') . '" class="icon-img">';
-                                    break;
-                                case 'location':
-                                    $iconContent = '<img src="' . asset($iconPath . 'location.svg') . '" alt="Location Icon" class="icon-img">';
-                                    break;
-                                default:
-                                    $iconContent = '<img src="' . asset($iconPath . 'default-link.svg') . '" alt="Link Icon" class="icon-img">';
+                                case 'phone': $iconContent = '<img src="' . asset($iconPath . 'telephone.svg') . '" class="icon-img">'; $href = 'tel:' . $link['value']; break;
+                                case 'sms': $iconContent = '<img src="' . asset($iconPath . 'sms.svg') . '" class="icon-img">'; $href = 'sms:' . $link['value']; break;
+                                case 'mail': $iconContent = '<img src="' . asset($iconPath . 'mail.svg') . '" class="icon-img">'; $href = 'mailto:' . $link['value']; break;
+                                case 'website': $iconContent = '<img src="' . asset($iconPath . 'web.svg') . '" class="icon-img">'; break;
+                                case 'whatsapp': $iconContent = '<img src="' . asset($iconPath . 'whatsapp.svg') . '" class="icon-img">'; $href = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $link['value']); break;
+                                case 'viber': $iconContent = '<img src="' . asset($iconPath . 'viber.svg') . '" class="icon-img">'; $href = 'viber://chat?number=' . preg_replace('/[^0-9]/', '', $link['value']); break;
+                                case 'facebook': $iconContent = '<img src="' . asset($iconPath . 'facebook.svg') . '" class="icon-img">'; break;
+                                case 'messenger': $iconContent = '<img src="' . asset($iconPath . 'massenger.svg') . '" class="icon-img">'; break;
+                                case 'instagram': $iconContent = '<img src="' . asset($iconPath . 'instagram.svg') . '" class="icon-img">'; break;
+                                case 'youtube': $iconContent = '<img src="' . asset($iconPath . 'youtube.svg') . '" class="icon-img">'; break;
+                                case 'telegram': $iconContent = '<img src="' . asset($iconPath . 'telegram.svg') . '" class="icon-img">'; $val = $link['value']; if (!str_starts_with($val, 'http')) { $val = 'https://t.me/' . str_replace('@', '', $val); } $href = $val; break;
+                                case 'tiktok': $iconContent = '<img src="' . asset($iconPath . 'tiktok.svg') . '" class="icon-img">'; break;
+                                case 'location': $iconContent = '<img src="' . asset($iconPath . 'location.svg') . '" class="icon-img">'; break;
+                                default: $iconContent = '<img src="' . asset($iconPath . 'default-link.svg') . '" class="icon-img">';
                             }
                         @endphp
 
                         <a href="{{ $href }}" target="_blank" class="flex flex-col items-center text-decoration-none group">
-                            <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-2 transition-transform duration-200 shadow-xl hover:scale-110"
+                            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-2 transition-transform duration-200 shadow-xl hover:scale-110"
                                  style="background-color: {{ $icon_bg_rgba }};">
                                 {!! $iconContent !!}
                             </div>
 
-                            <span class="text-xs font-bold mt-1 text-center truncate w-full" style="color: {{ $brand_color }};">
+                            <span class="text-sm font-bold mt-1 text-center truncate w-full" style="color: #ffffff; ">
                                 {{ $label }}
                             </span>
                         </a>
@@ -300,31 +264,42 @@ $vcard_link = generateVCard($card);
 
             <div class="my-10 border-t border-gray-700/50"></div>
 
-            <h2 class="text-xl font-bold text-white text-center mb-6 tracking-widest opacity-90">SHARE MY CARD</h2>
+            <h2 id="share-text" class="text-xl font-bold text-white text-center mb-6 tracking-widest opacity-90">SHARE MY CARD</h2>
 
-            <div class="flex justify-center space-x-4 pb-12">
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" target="_blank" class="w-12 h-12 bg-[#2c2c2c] rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-200 shadow-lg">
-                    <img src="{{ asset('iconsvg/facebook.svg') }}" alt="Facebook" class="share-icon-img w-6 h-6">
+            <div class="flex justify-center gap-4 pb-4">
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" target="_blank"
+                   class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
+                   style="background-color: {{ $icon_bg_rgba }};">
+                    <img src="{{ asset('iconsvg/facebook.svg') }}" alt="Facebook" class="icon-img">
                 </a>
-                <a href="https://wa.me/?text=Check%20out%20my%20digital%20card:%20{{ url()->current() }}" target="_blank" class="w-12 h-12 bg-[#2c2c2c] rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-200 shadow-lg">
-                    <img src="{{ asset('iconsvg/whatsapp.svg') }}" alt="WhatsApp" class="share-icon-img w-6 h-6">
+                
+                <a href="https://wa.me/?text=Check%20out%20my%20digital%20card:%20{{ url()->current() }}" target="_blank"
+                   class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
+                   style="background-color: {{ $icon_bg_rgba }};">
+                    <img src="{{ asset('iconsvg/whatsapp.svg') }}" alt="WhatsApp" class="icon-img">
                 </a>
-                <a href="https://www.instagram.com/share?url={{ urlencode(url()->current()) }}" target="_blank" class="w-12 h-12 bg-[#2c2c2c] rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-200 shadow-lg">
-                    <img src="{{ asset('iconsvg/instagram.svg') }}" alt="Instagram" class="share-icon-img w-6 h-6">
+                
+                <a href="https://www.instagram.com/share?url={{ urlencode(url()->current()) }}" target="_blank"
+                   class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
+                   style="background-color: {{ $icon_bg_rgba }};">
+                    <img src="{{ asset('iconsvg/instagram.svg') }}" alt="Instagram" class="icon-img">
                 </a>
-                <a href="sms:?body=Check%20out%20my%20digital%20card:%20{{ url()->current() }}" class="w-12 h-12 bg-[#2c2c2c] rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-200 shadow-lg">
-                    <img src="{{ asset('iconsvg/sms.svg') }}" alt="SMS" class="share-icon-img w-6 h-6">
+                
+                <a href="sms:?body=Check%20out%20my%20digital%20card:%20{{ url()->current() }}"
+                   class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
+                   style="background-color: {{ $icon_bg_rgba }};">
+                    <img src="{{ asset('iconsvg/sms.svg') }}" alt="SMS" class="icon-img">
                 </a>
             </div>
-        </div>
+            </div>
     </div>
 
     <div class="fixed-contact-button text-center">
         <a href="{{ $vcard_link }}" download="{{ $card->slug }}.vcf"
            class="inline-flex items-center justify-center w-full max-w-[280px] contact-btn transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
             <img src="{{ asset('iconsvg/add-user.svg') }}" alt="Add User" class="icon-img mr-3 w-5 h-5">
-            <span class="text-base uppercase tracking-wide font-bold">
-                Save Contact
+            <span id="save-contact-text" class="text-xs font-bold uppercase tracking-wide">
+                ADD TO CONTACT LIST
             </span>
         </a>
     </div>
@@ -336,8 +311,22 @@ $vcard_link = generateVCard($card);
             subtitles: @json($jsData['subtitles'])
         };
 
+        // Նոր թարգմանությունները ինտերֆեյսի համար
+        const uiTranslations = {
+            shareText: {
+                en: 'SHARE MY CARD',
+                ru: 'ПОДЕЛИТЬСЯ МОЕЙ КАРТОЙ',
+                hy: 'ԿԻՍՎԵԼ ԻՄ ՔԱՐՏՈՎ'
+            },
+            saveContactText: {
+                en: 'ADD TO CONTACT LIST',
+                ru: 'ДОБАВИТЬ В СПИСОК КОНТАКТОВ',
+                hy: 'ԱՎԵԼԱՑՆԵԼ ԿՈՆՏԱԿՏՆԵՐԻ ՑԱՆԿՈՒՄ'
+            }
+        };
+
         function switchLanguage(lang) {
-            // 1. Թարմացնում ենք տեքստերը
+            // 1. Թարմացնում ենք Վերնագրերը
             const title = cardData.titles[lang] || cardData.titles['en'] || '';
             const subtitle = cardData.subtitles[lang] || cardData.subtitles['en'] || '';
 
@@ -349,7 +338,18 @@ $vcard_link = generateVCard($card);
             if(subtitleEl) subtitleEl.innerText = subtitle;
             if(logoTextEl) logoTextEl.innerText = title;
 
-            // 2. Թարմացնում ենք կոճակների ոճերը
+            // 2. Թարմացնում ենք ինտերֆեյսի տեքստերը (Share & Save)
+            const shareTextEl = document.getElementById('share-text');
+            const saveContactTextEl = document.getElementById('save-contact-text');
+
+            if(shareTextEl) {
+                shareTextEl.innerText = uiTranslations.shareText[lang] || uiTranslations.shareText['en'];
+            }
+            if(saveContactTextEl) {
+                saveContactTextEl.innerText = uiTranslations.saveContactText[lang] || uiTranslations.saveContactText['en'];
+            }
+
+            // 3. Թարմացնում ենք կոճակների ոճերը
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
             });

@@ -54,6 +54,11 @@ class StoreCardRequest extends FormRequest
             'icon_bg_color' => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'icon_bg_opacity' => ['nullable', 'numeric', 'min:0', 'max:1'],
             
+
+            'bg_overlay_color' => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'bg_overlay_opacity' => ['nullable', 'numeric', 'min:0', 'max:1'],
+
+            
             // Հղումներ
             'links' => 'nullable|array', 
             'links.*.value' => 'nullable|string|max:500', 

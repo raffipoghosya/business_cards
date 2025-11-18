@@ -25,6 +25,8 @@ class BusinessCard extends Model
         'logo_bg_color',
         'logo_bg_opacity',
         'logo_path',
+        'bg_overlay_color', 
+        'bg_overlay_opacity',
         'background_image_path',
         'links',
     ];
