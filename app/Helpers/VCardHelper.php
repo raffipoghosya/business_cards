@@ -8,36 +8,34 @@ if (!function_exists('generateVCard')) {
     function generateVCard(BusinessCard $card): string {
         $vcard = "BEGIN:VCARD\r\n";
         $vcard .= "VERSION:3.0\r\n";
+        
+        // Ֆայլի անունը
+        $slug = Str::slug($card->slug ?? 'card');
+        $fileName = "vcards/{$slug}.vcf";
 
-        // *** ՈՒՂՂՈՒՄ ***
-        // Ստուգում ենք՝ title-ը զանգված է, թե ոչ։
-        // Եթե զանգված է, վերցնում ենք 'en' (անգլերեն) տարբերակը, կամ առաջինը, որ կա։
         $displayTitle = $card->title;
         if (is_array($card->title)) {
-            $displayTitle = $card->title['en'] ?? reset($card->title) ?? 'Digital Card';
+            $displayTitle = isset($card->title['en']) ? $card->title['en'] : (reset($card->title) ?: 'Digital Card');
         }
 
         $vcard .= "FN:" . $displayTitle . "\r\n";
         $vcard .= "ORG:" . $displayTitle . "\r\n";
 
         if ($card->links) {
-            // links-ը արդեն array է (casts-ի շնորհիվ), կարիք չկա json_decode անելու
             $links = is_array($card->links) ? $card->links : json_decode($card->links, true);
 
             if (is_array($links)) {
                 foreach ($links as $link) {
-                    // Ստուգում ենք, որ array լինի (ապահովության համար)
                     if (!is_array($link)) continue;
 
-                    $value = $link['value'] ?? '';
-                    $key = $link['key'] ?? '';
+                    $value = isset($link['value']) ? $link['value'] : '';
+                    $key = isset($link['key']) ? $link['key'] : '';
 
                     switch ($key) {
                         case 'phone':
                             $vcard .= "TEL;TYPE=WORK,VOICE:" . $value . "\r\n";
                             break;
                         case 'sms':
-                            // vCard-ը ստանդարտ SMS դաշտ չունի, սովորաբար պահվում է որպես TEL կամ NOTE
                             $vcard .= "TEL;TYPE=MSG:" . $value . "\r\n";
                             break;
                         case 'mail':
@@ -47,6 +45,11 @@ if (!function_exists('generateVCard')) {
                             $vcard .= "URL;TYPE=Website:" . $value . "\r\n";
                             break;
                         case 'location':
+                            $nameParts = explode(' ', $displayTitle);
+                            $lastName = isset($nameParts[1]) ? $nameParts[1] : '';
+                            $firstName = isset($nameParts[0]) ? $nameParts[0] : '';
+                            
+                            $vcard .= "N:{$lastName};{$firstName};;;\r\n"; 
                             $vcard .= "ADR;TYPE=WORK:;;" . $value . "\r\n";
                             break;
                         case 'whatsapp':
@@ -58,15 +61,16 @@ if (!function_exists('generateVCard')) {
                         case 'instagram':
                             $vcard .= "X-SOCIALPROFILE;type=instagram:" . $value . "\r\n";
                             break;
-                            case 'youtube':
-                                $vcard .= "X-SOCIALPROFILE;type=youtube:" . $value . "\r\n";
-                                break;
-                            case 'telegram':
-                                $vcard .= "X-SOCIALPROFILE;type=telegram:" . $value . "\r\n";
-                                break;
-                            case 'tiktok':
-                                $vcard .= "X-SOCIALPROFILE;type=tiktok:" . $value . "\r\n";
-                                break;                        default:
+                        case 'youtube':
+                            $vcard .= "X-SOCIALPROFILE;type=youtube:" . $value . "\r\n";
+                            break;
+                        case 'telegram':
+                            $vcard .= "X-SOCIALPROFILE;type=telegram:" . $value . "\r\n";
+                            break;
+                        case 'tiktok':
+                            $vcard .= "X-SOCIALPROFILE;type=tiktok:" . $value . "\r\n";
+                            break;                        
+                        default:
                             if (!empty($value)) {
                                 $vcard .= "URL;TYPE=" . ucfirst($key) . ":" . $value . "\r\n";
                             }
@@ -76,22 +80,18 @@ if (!function_exists('generateVCard')) {
             }
         }
 
-        // Ավելացնում ենք նկարը (PHOTO), եթե կա
         if ($card->logo_path) {
-             // vCard 3.0-ը աջակցում է ուղիղ URL (PHOTO;VALUE=URI:...)
-             // կամ Base64 (PHOTO;ENCODING=b;TYPE=JPEG:...)
-             // Ամենահեշտը URL տարբերակն է, եթե ֆայլը հասանելի է դրսից
              $photoUrl = Storage::url($card->logo_path);
-             // Լիարժեք URL ստանալու համար (եթե Storage::url-ը հարաբերական է տալիս)
              if (!Str::startsWith($photoUrl, ['http://', 'https://'])) {
                  $photoUrl = asset($photoUrl);
              }
-             
              $vcard .= "PHOTO;VALUE=URI:" . $photoUrl . "\r\n";
         }
 
         $vcard .= "END:VCARD\r\n";
 
-        return $vcard;
+        Storage::disk('public')->put($fileName, $vcard);
+
+        return Storage::url($fileName);
     }
 }

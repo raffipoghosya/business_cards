@@ -1,7 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Storage;
 
-// Օգնող ֆունկցիա՝ տվյալները ապահով ստանալու համար
 $getTranslation = function($field, $lang = 'en') {
     if (is_array($field)) {
         return $field[$lang] ?? $field['en'] ?? '';
@@ -9,11 +8,9 @@ $getTranslation = function($field, $lang = 'en') {
     return $field;
 };
 
-// Սկզբնական արժեքները (Default English)
 $titleEn = $getTranslation($card->title, 'en');
 $subtitleEn = $getTranslation($card->subtitle, 'en');
 
-// Պատրաստում ենք JSON տվյալները JavaScript-ի համար
 $jsData = [
     'titles' => is_array($card->title) ? $card->title : ['en' => $card->title, 'ru' => $card->title, 'hy' => $card->title],
     'subtitles' => is_array($card->subtitle) ? $card->subtitle : ['en' => '', 'ru' => '', 'hy' => ''],
@@ -33,24 +30,19 @@ $vcard_link = generateVCard($card);
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @php
-            // 1. Brand Color Logic
             list($r, $g, $b) = sscanf($card->brand_color, "#%02x%02x%02x");
             $logo_bg_rgba = "rgba($r, $g, $b, " . $card->logo_bg_opacity . ")";
             $brand_color = $card->brand_color;
 
-            // 2. Icon Background Logic
             $iconColorHex = $card->icon_bg_color ?? '#ffffff'; 
             $iconOpacity = $card->icon_bg_opacity ?? 1.0;
 
-            // Վերածում ենք RGBA-ի (Icon)
             list($ir, $ig, $ib) = sscanf($iconColorHex, "#%02x%02x%02x");
             $icon_bg_rgba = "rgba($ir, $ig, $ib, " . $iconOpacity . ")";
 
-            // 3. Background Overlay Logic
             $bgOverlayHex = $card->bg_overlay_color ?? '#151212'; 
             $bgOverlayOpacity = $card->bg_overlay_opacity ?? 0.3; 
 
-            // Վերածում ենք RGBA-ի (Background Overlay)
             list($br, $bg, $bb) = sscanf($bgOverlayHex, "#%02x%02x%02x");
             $bg_overlay_rgba = "rgba($br, $bg, $bb, " . $bgOverlayOpacity . ")";
         @endphp
@@ -67,7 +59,6 @@ $vcard_link = generateVCard($card);
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            /* Պահում ենք քիչ padding, որպեսզի սքրոլը շատ չլինի */
             padding-bottom: 85px; 
         }
 
@@ -77,7 +68,6 @@ $vcard_link = generateVCard($card);
             padding: 1rem 1.5rem;
             border-radius: 9999px;
             font-weight: 700;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
@@ -101,11 +91,8 @@ $vcard_link = generateVCard($card);
             width: 100%;
             max-width: 400px;
             padding: 1rem;
-            /* Ավելացնում ենք թեթև գրադիենտ տակից, որ գեղեցիկ լինի */
-            background: linear-gradient(to top, rgba(26,26,26,1) 0%, rgba(26,26,26,0) 100%);
         }
         
-        /* --- Լեզվի կոճակներ --- */
         .lang-switcher-container {
             display: flex;
             align-items: center;
@@ -170,7 +157,7 @@ $vcard_link = generateVCard($card);
         </div>
 
         <div class="absolute top-6 left-6 z-50">
-            <img src="{{ asset('iconsvg/logo.png') }}" alt="Brand Logo" class="h-16 w-auto opacity-90 drop-shadow-md">
+            <img src="{{ asset('iconsvg/logo.png') }}" alt="Brand Logo" class="h-12 w-auto opacity-90 drop-shadow-md">
         </div>
 
         <div class="absolute top-7 right-8 z-50 lang-switcher-container">
@@ -180,25 +167,18 @@ $vcard_link = generateVCard($card);
         </div>
 
         <div class="relative z-10 flex flex-col items-center logo-block">
-            <div class="logo-background w-48 h-48 rounded-full flex items-center justify-center shadow-lg bg-white p-2">
-                @if ($card->logo_path)
-                    <img src="{{ Storage::url($card->logo_path) }}" alt="Logo" class="w-full h-full object-contain rounded-full">
-                @else
-                    <h1 id="logo-text" class="text-3xl font-bold text-center text-gray-800 px-4">{{ $titleEn }}</h1>
-                @endif
-            </div>
+        <div class="logo-background w-48 h-48 rounded-full flex items-center justify-center shadow-lg">
+    @if ($card->logo_path)
+        <img src="{{ Storage::url($card->logo_path) }}" alt="Logo" class="w-full h-full object-contain rounded-full">
+    @else
+        <h1 id="logo-text" class="text-3xl font-bold text-center text-gray-800 px-4 p-2">{{ $titleEn }}</h1>
+    @endif
+</div>
 
             <div class="text-center mt-4 w-full">
                 <h1 id="display-title"
                     class="text-2xl tracking-tight drop-shadow-lg font-bold"
-                    style="color: {{ $card->title_color ?? '#ffffff' }};
-                           font-weight: 700;
-                           display: inline-block;
-                           max-width: 14ch;
-                           white-space: normal;
-                           overflow-wrap: break-word;
-                           word-break: keep-all;
-                           line-height: 0.9;">
+                    style="color: {{ $card->title_color ?? '#ffffff' }}; font-weight: 700; display: block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 0.9;">
                     {{ $titleEn }}
                 </h1>
 
@@ -298,13 +278,11 @@ $vcard_link = generateVCard($card);
     </div>
 
     <script>
-        // Տվյալները ստանում ենք PHP-ից
         const cardData = {
             titles: @json($jsData['titles']),
             subtitles: @json($jsData['subtitles'])
         };
 
-        // Նոր թարգմանությունները ինտերֆեյսի համար
         const uiTranslations = {
             shareText: {
                 en: 'SHARE MY CARD',
@@ -319,7 +297,6 @@ $vcard_link = generateVCard($card);
         };
 
         function switchLanguage(lang) {
-            // 1. Թարմացնում ենք Վերնագրերը
             const title = cardData.titles[lang] || cardData.titles['en'] || '';
             const subtitle = cardData.subtitles[lang] || cardData.subtitles['en'] || '';
 
@@ -331,7 +308,6 @@ $vcard_link = generateVCard($card);
             if(subtitleEl) subtitleEl.innerText = subtitle;
             if(logoTextEl) logoTextEl.innerText = title;
 
-            // 2. Թարմացնում ենք ինտերֆեյսի տեքստերը (Share & Save)
             const shareTextEl = document.getElementById('share-text');
             const saveContactTextEl = document.getElementById('save-contact-text');
 
@@ -342,7 +318,6 @@ $vcard_link = generateVCard($card);
                 saveContactTextEl.innerText = uiTranslations.saveContactText[lang] || uiTranslations.saveContactText['en'];
             }
 
-            // 3. Թարմացնում ենք կոճակների ոճերը
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
