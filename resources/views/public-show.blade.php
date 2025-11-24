@@ -152,8 +152,8 @@ $vcard_link = generateVCard($card);
 <body>
 
     <div class="relative w-full max-w-md mx-auto">
-        <div class="absolute top-0 left-0 right-0 z-0 w-full h-[400px] shadow-2xl"
-             style="background-color: {{ $logo_bg_rgba }};border-bottom-left-radius: 35%; border-bottom-right-radius: 35%;">
+        <div class="absolute top-0 left-0 right-0 z-0 w-full h-[370px] shadow-2xl"
+             style="background-color: {{ $logo_bg_rgba }};border-bottom-left-radius: 40%; border-bottom-right-radius: 40%;">
         </div>
 
         <div class="absolute top-6 left-6 z-50">
@@ -176,9 +176,9 @@ $vcard_link = generateVCard($card);
 </div>
 
             <div class="text-center mt-4 w-full">
-                <h1 id="display-title"
+            <h1 id="display-title"
                     class="text-2xl tracking-tight drop-shadow-lg font-bold"
-                    style="color: {{ $card->title_color ?? '#ffffff' }}; font-weight: 700; display: block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 0.9;">
+                    style="color: {{ $card->title_color ?? '#ffffff' }}; font-weight: 700; display: block; max-width: 100%; line-height: 0.9;">
                     {{ $titleEn }}
                 </h1>
 
@@ -200,70 +200,115 @@ $vcard_link = generateVCard($card);
 
         <div class="relative z-10 w-full px-6 pt-16 mb-12">
 
-            <div class="w-full grid grid-cols-4 gap-4">
-                @if ($card->links)
-                    @foreach ($card->links as $link)
-                        @php
-                            $iconContent = '';
-                            $href = $link['value'];
-                            $label = $link['label'];
-                            $iconPath = 'iconsvg/';
+        <div class="w-full grid grid-cols-4 gap-4">
+    @if ($card->links)
+        @foreach ($card->links as $link)
+            @php
+                $iconContent = '';
+                $href = $link['value']; // Լռելյայն արժեքը
+                $label = $link['label'];
+                $iconPath = 'iconsvg/';
 
-                            switch ($link['key']) {
-                                case 'phone': $iconContent = '<img src="' . asset($iconPath . 'telephone.svg') . '" class="icon-img">'; $href = 'tel:' . $link['value']; break;
-                                case 'sms': $iconContent = '<img src="' . asset($iconPath . 'sms.svg') . '" class="icon-img">'; $href = 'sms:' . $link['value']; break;
-                                case 'mail': $iconContent = '<img src="' . asset($iconPath . 'mail.svg') . '" class="icon-img">'; $href = 'mailto:' . $link['value']; break;
-                                case 'website': $iconContent = '<img src="' . asset($iconPath . 'web.svg') . '" class="icon-img">'; break;
-                                case 'whatsapp': $iconContent = '<img src="' . asset($iconPath . 'whatsapp.svg') . '" class="icon-img">'; $href = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $link['value']); break;
-                                case 'viber': $iconContent = '<img src="' . asset($iconPath . 'viber.svg') . '" class="icon-img">'; $href = 'viber://chat?number=' . preg_replace('/[^0-9]/', '', $link['value']); break;
-                                case 'facebook': $iconContent = '<img src="' . asset($iconPath . 'facebook.svg') . '" class="icon-img">'; break;
-                                case 'messenger': $iconContent = '<img src="' . asset($iconPath . 'massenger.svg') . '" class="icon-img">'; break;
-                                case 'instagram': $iconContent = '<img src="' . asset($iconPath . 'instagram.svg') . '" class="icon-img">'; break;
-                                case 'youtube': $iconContent = '<img src="' . asset($iconPath . 'youtube.svg') . '" class="icon-img">'; break;
-                                case 'telegram': $iconContent = '<img src="' . asset($iconPath . 'telegram.svg') . '" class="icon-img">'; $val = $link['value']; if (!str_starts_with($val, 'http')) { $val = 'https://t.me/' . str_replace('@', '', $val); } $href = $val; break;
-                                case 'tiktok': $iconContent = '<img src="' . asset($iconPath . 'tiktok.svg') . '" class="icon-img">'; break;
-                                case 'location': $iconContent = '<img src="' . asset($iconPath . 'location.svg') . '" class="icon-img">'; break;
-                                default: $iconContent = '<img src="' . asset($iconPath . 'default-link.svg') . '" class="icon-img">';
-                            }
-                        @endphp
+                // Մաքրում ենք հեռախոսահամարները ոչ թվային նշաններից
+                $cleanValue = preg_replace('/[^0-9]/', '', $link['value']);
 
-                        <a href="{{ $href }}" target="_blank" class="flex flex-col items-center text-decoration-none group">
-                            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-2 transition-transform duration-200 shadow-xl hover:scale-110"
-                                 style="background-color: {{ $icon_bg_rgba }};">
-                                {!! $iconContent !!}
-                            </div>
+                switch ($link['key']) {
+                    // Ուղղակի զանգ և նամակ (URI Schemes են)
+                    case 'phone': $iconContent = '<img src="' . asset($iconPath . 'telephone.svg') . '" class="icon-img">'; $href = 'tel:' . $cleanValue; break;
+                    case 'sms': $iconContent = '<img src="' . asset($iconPath . 'sms.svg') . '" class="icon-img">'; $href = 'sms:' . $cleanValue; break;
+                    case 'mail': $iconContent = '<img src="' . asset($iconPath . 'mail.svg') . '" class="icon-img">'; $href = 'mailto:' . $link['value']; break;
 
-                            <span class="text-sm font-bold mt-1 text-center truncate w-full" style="color: #ffffff; ">
-                                {{ $label }}
-                            </span>
-                        </a>
-                    @endforeach
-                @endif
-            </div>
+                    // Հավելվածների համար (URI Schemes)
+                    case 'whatsapp': $iconContent = '<img src="' . asset($iconPath . 'whatsapp.svg') . '" class="icon-img">'; $href = 'https://wa.me/' . $cleanValue; break; // wa.me-ը լավագույն տարբերակն է
+                    case 'viber': $iconContent = '<img src="' . asset($iconPath . 'viber.svg') . '" class="icon-img">'; $href = 'viber://chat?number=' . $cleanValue; break;
+
+                    // Սոցիալական մեդիա (Փորձում ենք օգտագործել App Schemes)
+                    case 'facebook':
+                        $iconContent = '<img src="' . asset($iconPath . 'facebook.svg') . '" class="icon-img">';
+                        // Օգտագործում ենք fb:// URI: Պետք է ավելացվի user/page ID կամ profile URL-ը
+                        $href = 'fb://profile/' . basename(rtrim($link['value'], '/')); // Սա ենթադրություն է, կախված, թե ինչպես եք պահպանում հղումը
+                        break;
+                    case 'messenger': 
+                        $iconContent = '<img src="' . asset($iconPath . 'massenger.svg') . '" class="icon-img">'; 
+                        // fb-messenger:// URI
+                        $href = 'fb-messenger://user-thread/' . basename(rtrim($link['value'], '/'));
+                        break;
+                    case 'instagram': 
+                        $iconContent = '<img src="' . asset($iconPath . 'instagram.svg') . '" class="icon-img">'; 
+                        // instagram:// URI
+                        $username = str_replace('@', '', basename(rtrim($link['value'], '/')));
+                        $href = 'instagram://user?username=' . $username; 
+                        break;
+                    case 'youtube': 
+                        $iconContent = '<img src="' . asset($iconPath . 'youtube.svg') . '" class="icon-img">'; 
+                        // youtube:// URI
+                        $href = 'vnd.youtube://' . $link['value']; 
+                        break;
+                    case 'telegram': 
+                        $iconContent = '<img src="' . asset($iconPath . 'telegram.svg') . '" class="icon-img">'; 
+                        $val = $link['value']; 
+                        if (!str_starts_with($val, 'http')) { 
+                            $val = 'https://t.me/' . str_replace('@', '', $val); 
+                        } 
+                        $href = $val; // Telegram-ի t.me հղումները լավ են աշխատում Deep Linking-ի հետ
+                        break;
+                    case 'tiktok': 
+                        $iconContent = '<img src="' . asset($iconPath . 'tiktok.svg') . '" class="icon-img">'; 
+                        // tiktok:// URI
+                        $href = 'tiktok://user/profile/' . basename(rtrim($link['value'], '/'));
+                        break;
+                        
+                    // Մյուսները մնում են հիմնականում URL-ի տեսքով
+                    case 'website': $iconContent = '<img src="' . asset($iconPath . 'web.svg') . '" class="icon-img">'; break;
+                    case 'location': $iconContent = '<img src="' . asset($iconPath . 'location.svg') . '" class="icon-img">'; break;
+                    default: $iconContent = '<img src="' . asset($iconPath . 'default-link.svg') . '" class="icon-img">';
+                }
+            @endphp
+
+            <a href="{{ $href }}" target="_blank" class="flex flex-col items-center text-decoration-none group">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-2 transition-transform duration-200 shadow-xl hover:scale-110"
+                     style="background-color: {{ $icon_bg_rgba }};">
+                    {!! $iconContent !!}
+                </div>
+
+                <span class="text-sm font-bold mt-1 text-center truncate w-full" style="color: #ffffff; ">
+                    {{ $label }}
+                </span>
+            </a>
+        @endforeach
+    @endif
+</div>
 
             <div class="my-5 border-t border-gray-700/50"></div>
 
 <h2 id="share-text" class="text-xl font-bold text-white text-center mb-6 tracking-widest opacity-90">SHARE MY CARD</h2>
-
 <div class="flex justify-center gap-4 pb-4">
-    <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" target="_blank"
+    <div id="copy-message" class="absolute bg-green-500 text-white px-3 py-1 rounded-lg transition duration-300 opacity-0 transform translate-y-10">
+        Հղումը պատճենված է!
+    </div>
+    
+    <a href="javascript:void(0);" onclick="handleShare('facebook', '{{ url()->current() }}');"
        class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-       style="background-color: {{ $share_bg_rgba }};"> <img src="{{ asset('iconsvg/facebook.svg') }}" alt="Facebook" class="icon-img">
+       style="background-color: {{ $share_bg_rgba }};"> 
+       <img src="{{ asset('iconsvg/facebook.svg') }}" alt="Facebook" class="icon-img">
     </a>
 
     <a href="https://wa.me/?text=Check%20out%20my%20digital%20card:%20{{ url()->current() }}" target="_blank"
        class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-       style="background-color: {{ $share_bg_rgba }};"> <img src="{{ asset('iconsvg/whatsapp.svg') }}" alt="WhatsApp" class="icon-img">
+       style="background-color: {{ $share_bg_rgba }};"> 
+       <img src="{{ asset('iconsvg/whatsapp.svg') }}" alt="WhatsApp" class="icon-img">
     </a>
 
-    <a href="https://www.instagram.com/share?url={{ urlencode(url()->current()) }}" target="_blank"
+    <a href="javascript:void(0);" onclick="handleShare('instagram', '{{ url()->current() }}');"
        class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-       style="background-color: {{ $share_bg_rgba }};"> <img src="{{ asset('iconsvg/instagram.svg') }}" alt="Instagram" class="icon-img">
+       style="background-color: {{ $share_bg_rgba }};"> 
+       <img src="{{ asset('iconsvg/instagram.svg') }}" alt="Instagram" class="icon-img">
     </a>
 
     <a href="sms:?body=Check%20out%20my%20digital%20card:%20{{ url()->current() }}"
        class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-       style="background-color: {{ $share_bg_rgba }};"> <img src="{{ asset('iconsvg/sms.svg') }}" alt="SMS" class="icon-img">
+       style="background-color: {{ $share_bg_rgba }};"> 
+       <img src="{{ asset('iconsvg/sms.svg') }}" alt="SMS" class="icon-img">
     </a>
 </div>
 
@@ -328,5 +373,72 @@ $vcard_link = generateVCard($card);
             }
         }
     </script>
+    <script>
+    // Ֆունկցիա՝ հղումը պատճենելու և ծանուցում ցուցադրելու համար
+    function copyLinkAndNotify(link) {
+        navigator.clipboard.writeText(link).then(function() {
+            var message = document.getElementById('copy-message');
+            
+            // Ցուցադրել հաղորդագրությունը (Tailwind-ի դասեր)
+            message.classList.remove('opacity-0', 'translate-y-10');
+            message.classList.add('opacity-100', 'translate-y-0');
+            
+            // Թաքցնել հաղորդագրությունը 2 վայրկյան հետո
+            setTimeout(function() {
+                message.classList.remove('opacity-100', 'translate-y-0');
+                message.classList.add('opacity-0', 'translate-y-10');
+            }, 2000);
+            
+        }).catch(err => {
+            console.error('Հղումը չհաջողվեց պատճենել:', err);
+            // Կարող եք այլընտրանքային ծանուցում ցուցադրել, եթե չի աշխատում
+        });
+    }
+
+    // Ֆունկցիա՝ հավելվածը բացելու կամ հղումը պատճենելու համար
+    function handleShare(platform, link) {
+        
+        let appScheme = '';
+        let webShareUrl = ''; 
+        let storeUrl = '';
+
+        if (platform === 'facebook') {
+            // Facebook-ի URI-ները բարդ են: Ավելի հուսալի է ուղղակի պատճենել հղումը կամ բացել շերինգի պատուհանը:
+            webShareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link);
+            appScheme = 'fb://'; // Փորձում ենք բացել Facebook հավելվածը
+            storeUrl = 'https://apps.apple.com/us/app/facebook/id284882215'; // Օրինակ iOS-ի համար
+
+        } else if (platform === 'instagram') {
+            // Instagram-ը չունի ուղղակի URL-ի կիսման URI. Միակ տարբերակը ուղղակի հղման պատճենումն է
+            webShareUrl = 'https://www.instagram.com/'; // Instagram-ի բացում
+            appScheme = 'instagram://'; // Փորձում ենք բացել Instagram հավելվածը
+            storeUrl = 'https://apps.apple.com/us/app/instagram/id389801252'; // Օրինակ iOS-ի համար
+
+        }
+
+        // Քայլ 1: Փորձել բացել հավելվածը (Deep Linking)
+        if (appScheme) {
+            window.location.href = appScheme;
+            
+            // Եթե 1.5 վայրկյան հետո հավելվածը չի բացվել (նշանակում է այն տեղադրված չէ)
+            setTimeout(function() {
+                if (document.hasFocus()) {
+                    // Եթե դեռ մեր էջի վրա ենք (հավելվածը չի բացվել)
+                    
+                    // Քայլ 2: Պատճենել հղումը
+                    copyLinkAndNotify(link);
+                    
+                    // Քայլ 3: Բացել App Store-ը (կարող եք այս քայլը բաց թողնել)
+                    // window.open(storeUrl, '_blank'); 
+                    
+                }
+            }, 1500);
+
+        } else {
+            // Եթե Deep Linking-ը կիրառելի չէ, ուղղակի պատճենել հղումը
+            copyLinkAndNotify(link);
+        }
+    }
+</script>
 </body>
 </html>
