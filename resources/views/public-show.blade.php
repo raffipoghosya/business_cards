@@ -32,7 +32,7 @@ $vcard_link = generateVCard($card);
         @php
             // Հիմնական գույների հաշվարկ
             list($r, $g, $b) = sscanf($card->brand_color, "#%02x%02x%02x");
-            $logo_bg_rgba = "rgba($r, $g, $b, " . $card->logo_bg_opacity . ")";
+            $logo_bg_rgba = "rgba($r, $g, $b, " . ($card->logo_bg_opacity ?? 1.0) . ")";
             $brand_color = $card->brand_color;
 
             $iconColorHex = $card->icon_bg_color ?? '#ffffff'; 
@@ -49,11 +49,16 @@ $vcard_link = generateVCard($card);
             
             // ՆՈՐ ՀԱՇՎԱՐԿ: «Պահպանել կոնտակտը» կոճակի գույն և թափանցիկություն
             $contactColorHex = $card->contact_btn_color ?? $card->brand_color; 
-            // opacity-ն գալիս է 0-100 որպես integer, փոխարկում ենք 0.0-1.0
             $contactOpacity = ($card->contact_btn_opacity ?? 100) / 100;
 
             list($cr, $cg, $cb) = sscanf($contactColorHex, "#%02x%02x%02x");
             $contact_btn_rgba = "rgba($cr, $cg, $cb, " . $contactOpacity . ")";
+            
+            // Share buttons գույնի հաշվարկ
+            $shareColorHex = $card->share_btn_bg_color ?? '#ffffff';
+            $shareOpacity = ($card->share_btn_bg_opacity ?? 100) / 100;
+            list($sr, $sg, $sb) = sscanf($shareColorHex, "#%02x%02x%02x");
+            $share_bg_rgba = "rgba($sr, $sg, $sb, " . $shareOpacity . ")";
         @endphp
 
         body {
@@ -83,7 +88,8 @@ $vcard_link = generateVCard($card);
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 4px; }
 
-        .logo-block { padding-top: 8vh; }
+        /* Դիրքը բարձրացնելու համար նվազեցնում ենք padding-ը */
+        .logo-block { padding-top: 1vh; /* Փոքրացված է 3vh-ից մինչև 1vh */ }
 
         .icon-img {
             width: 40px;
@@ -102,10 +108,11 @@ $vcard_link = generateVCard($card);
             padding: 1rem;
         }
         
+        /* Փոքրացնում ենք gap-ը */
         .lang-switcher-container {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 8px; /* Փոքրացված է 12px-ից */
         }
 
         .lang-btn {
@@ -114,7 +121,8 @@ $vcard_link = generateVCard($card);
             padding: 0;
             font-family: 'Mardoto', sans-serif;
             font-weight: 600;
-            font-size: 18px; 
+            /* Փոքրացնում ենք font-size-ը */
+            font-size: 13px; /* Փոքրացված է 15px-ից */ 
             text-transform: uppercase;
             color: #7a7a7a;
             cursor: pointer;
@@ -141,6 +149,31 @@ $vcard_link = generateVCard($card);
             height: 2px;
             background-color: #ffffff;
         }
+        
+        /* ՖԻՔՍՎԱԾ ԲԱԺՆԻ ՈՃԵՐԸ */
+        .fixed-header-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            width: 100%;
+            max-width: 400px; 
+            margin: 0 auto;
+            pointer-events: none; 
+        }
+        .header-content {
+            position: relative;
+            pointer-events: all; 
+            padding-top: 24px;
+            padding-bottom: 24px; 
+        }
+        
+        /* Դատարկ տարածքի պահպանումը header-ի տակ */
+        .content-spacer {
+            height: 70px; 
+            width: 100%;
+        }
     </style>
     <style>
         @font-face {
@@ -161,19 +194,36 @@ $vcard_link = generateVCard($card);
 <body>
 
     <div class="relative w-full max-w-md mx-auto">
+        {{-- Մեծ Կապույտ Ֆոնի Բլոկ --}}
         <div class="absolute top-0 left-0 right-0 z-0 w-full h-[370px] shadow-2xl"
              style="background-color: {{ $logo_bg_rgba }};border-bottom-left-radius: 40%; border-bottom-right-radius: 40%;">
         </div>
 
-        <div class="absolute top-6 left-6 z-50">
-            <img src="{{ asset('iconsvg/logo.png') }}" alt="Brand Logo" class="h-12 w-auto opacity-90 drop-shadow-md">
-        </div>
+        {{-- ********************************************************** --}}
+        {{-- ՖԻՔՍՎԱԾ ՀԵԴԵՐԻ ԿՈՆՏԵՅՆԵՐ --}}
+        {{-- ********************************************************** --}}
+        <div class="fixed-header-container">
+            <div class="header-content flex justify-between px-6">
+                
+                {{-- Ձախ: Լոգոն --}}
+                <div class="z-50">
+                    <img src="{{ asset('iconsvg/logo.png') }}" alt="Brand Logo" class="h-12 w-auto opacity-90 drop-shadow-md">
+                </div>
 
-        <div class="absolute top-7 right-8 z-50 lang-switcher-container">
-            <button onclick="switchLanguage('hy')" id="btn-hy" class="lang-btn">ՀԱՅ</button>
-            <button onclick="switchLanguage('ru')" id="btn-ru" class="lang-btn">РУ</button>
-            <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn active">EN</button>
+                {{-- Աջ: Լեզվի Ընտրիչ --}}
+                <div class="z-50 lang-switcher-container">
+                    <button onclick="switchLanguage('hy')" id="btn-hy" class="lang-btn active">ՀԱՅ</button>
+                    <button onclick="switchLanguage('ru')" id="btn-ru" class="lang-btn">РУ</button>
+                    <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn">EN</button>
+                </div>
+            </div>
         </div>
+        {{-- ********************************************************** --}}
+
+        {{-- ԲՈՎԱՆԴԱԿՈՒԹՅԱՆ ԲԼՈԿՆԵՐ --}}
+        
+        {{-- Ավելացնում ենք դատարկ տարածք, որպեսզի սքրոլի ժամանակ բովանդակությունը չծածկվի ֆիքսված հեդերով --}}
+        <div class="content-spacer"></div>
 
         <div class="relative z-10 flex flex-col items-center logo-block">
         <div class="logo-background w-48 h-48 rounded-full flex items-center justify-center shadow-lg">
@@ -234,23 +284,19 @@ $vcard_link = generateVCard($card);
                     // Սոցիալական մեդիա (Փորձում ենք օգտագործել App Schemes)
                     case 'facebook':
                         $iconContent = '<img src="' . asset($iconPath . 'facebook.svg') . '" class="icon-img">';
-                        // Օգտագործում ենք fb:// URI: Պետք է ավելացվի user/page ID կամ profile URL-ը
-                        $href = 'fb://profile/' . basename(rtrim($link['value'], '/')); // Սա ենթադրություն է, կախված, թե ինչպես եք պահպանում հղումը
+                        $href = 'fb://profile/' . basename(rtrim($link['value'], '/')); 
                         break;
                     case 'messenger': 
                         $iconContent = '<img src="' . asset($iconPath . 'massenger.svg') . '" class="icon-img">'; 
-                        // fb-messenger:// URI
                         $href = 'fb-messenger://user-thread/' . basename(rtrim($link['value'], '/'));
                         break;
                     case 'instagram': 
                         $iconContent = '<img src="' . asset($iconPath . 'instagram.svg') . '" class="icon-img">'; 
-                        // instagram:// URI
                         $username = str_replace('@', '', basename(rtrim($link['value'], '/')));
                         $href = 'instagram://user?username=' . $username; 
                         break;
                     case 'youtube': 
                         $iconContent = '<img src="' . asset($iconPath . 'youtube.svg') . '" class="icon-img">'; 
-                        // youtube:// URI
                         $href = 'vnd.youtube://' . $link['value']; 
                         break;
                     case 'telegram': 
@@ -259,15 +305,14 @@ $vcard_link = generateVCard($card);
                         if (!str_starts_with($val, 'http')) { 
                             $val = 'https://t.me/' . str_replace('@', '', $val); 
                         } 
-                        $href = $val; // Telegram-ի t.me հղումները լավ են աշխատում Deep Linking-ի հետ
+                        $href = $val;
                         break;
                     case 'tiktok': 
                         $iconContent = '<img src="' . asset($iconPath . 'tiktok.svg') . '" class="icon-img">'; 
-                        // tiktok:// URI
                         $href = 'tiktok://user/profile/' . basename(rtrim($link['value'], '/'));
                         break;
                         
-                    // Մյուսները մնում են հիմնականում URL-ի տեսքով
+                    // Մյուսները
                     case 'website': $iconContent = '<img src="' . asset($iconPath . 'web.svg') . '" class="icon-img">'; break;
                     case 'location': $iconContent = '<img src="' . asset($iconPath . 'location.svg') . '" class="icon-img">'; break;
                     default: $iconContent = '<img src="' . asset($iconPath . 'default-link.svg') . '" class="icon-img">';
@@ -324,7 +369,7 @@ $vcard_link = generateVCard($card);
     <div class="fixed-contact-button text-center">
         <a href="{{ $vcard_link }}" download="{{ $card->slug }}.vcf"
            class="inline-flex items-center justify-center w-full max-w-[280px] contact-btn transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
-            <img src="{{ asset('iconsvg/add-user.svg') }}" alt="Add User" class="icon-img mr-3 w-5 h-5">
+            <img src="{{ asset('iconsvg/add-user.svg') }}" alt="Add User" class="icon-img mr-3 w-5 h-5" style="filter: brightness(0) invert(1);">
             <span id="save-contact-text" class="text-xs font-bold uppercase tracking-wide">
                 ADD TO CONTACT LIST
             </span>
@@ -381,6 +426,11 @@ $vcard_link = generateVCard($card);
                 activeBtn.classList.add('active');
             }
         }
+        
+        // Դեֆոլթ լեզուն հայերեն դարձնելու համար
+        document.addEventListener('DOMContentLoaded', function() {
+            switchLanguage('hy'); 
+        });
     </script>
     <script>
     // Ֆունկցիա՝ հղումը պատճենելու և ծանուցում ցուցադրելու համար
@@ -400,7 +450,6 @@ $vcard_link = generateVCard($card);
             
         }).catch(err => {
             console.error('Հղումը չհաջողվեց պատճենել:', err);
-            // Կարող եք այլընտրանքային ծանուցում ցուցադրել, եթե չի աշխատում
         });
     }
 
@@ -409,42 +458,26 @@ $vcard_link = generateVCard($card);
         
         let appScheme = '';
         let webShareUrl = ''; 
-        let storeUrl = '';
 
         if (platform === 'facebook') {
-            // Facebook-ի URI-ները բարդ են: Ավելի հուսալի է ուղղակի պատճենել հղումը կամ բացել շերինգի պատուհանը:
             webShareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link);
-            appScheme = 'fb://'; // Փորձում ենք բացել Facebook հավելվածը
-            storeUrl = 'https://apps.apple.com/us/app/facebook/id284882215'; // Օրինակ iOS-ի համար
+            appScheme = 'fb://';
 
         } else if (platform === 'instagram') {
-            // Instagram-ը չունի ուղղակի URL-ի կիսման URI. Միակ տարբերակը ուղղակի հղման պատճենումն է
-            webShareUrl = 'https://www.instagram.com/'; // Instagram-ի բացում
-            appScheme = 'instagram://'; // Փորձում ենք բացել Instagram հավելվածը
-            storeUrl = 'https://apps.apple.com/us/app/instagram/id389801252'; // Օրինակ iOS-ի համար
-
+            webShareUrl = 'https://www.instagram.com/';
+            appScheme = 'instagram://';
         }
 
-        // Քայլ 1: Փորձել բացել հավելվածը (Deep Linking)
         if (appScheme) {
             window.location.href = appScheme;
             
-            // Եթե 1.5 վայրկյան հետո հավելվածը չի բացվել (նշանակում է այն տեղադրված չէ)
             setTimeout(function() {
                 if (document.hasFocus()) {
-                    // Եթե դեռ մեր էջի վրա ենք (հավելվածը չի բացվել)
-                    
-                    // Քայլ 2: Պատճենել հղումը
                     copyLinkAndNotify(link);
-                    
-                    // Քայլ 3: Բացել App Store-ը (կարող եք այս քայլը բաց թողնել)
-                    // window.open(storeUrl, '_blank'); 
-                    
                 }
             }, 1500);
 
         } else {
-            // Եթե Deep Linking-ը կիրառելի չէ, ուղղակի պատճենել հղումը
             copyLinkAndNotify(link);
         }
     }
