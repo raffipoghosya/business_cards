@@ -26,7 +26,8 @@ $vcard_link = generateVCard($card);
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titleEn }}</title>
+    {{-- Վերնագրի մեջ | նշանը փոխարինում ենք բացատով, որ tab-ի վրա սիրուն երևա --}}
+    <title>{{ str_replace('|', ' ', $titleEn) }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @php
@@ -195,7 +196,7 @@ $vcard_link = generateVCard($card);
 
     <div class="relative w-full max-w-md mx-auto">
         {{-- Մեծ Կապույտ Ֆոնի Բլոկ --}}
-        <div class="absolute top-0 left-0 right-0 z-0 w-full h-[380px] shadow-2xl"
+        <div class="absolute top-0 left-0 right-0 z-0 w-full h-[390px] shadow-2xl"
              style="background-color: {{ $logo_bg_rgba }};border-bottom-left-radius: 40%; border-bottom-right-radius: 40%;">
         </div>
 
@@ -230,17 +231,20 @@ $vcard_link = generateVCard($card);
     @if ($card->logo_path)
         <img src="{{ Storage::url($card->logo_path) }}" alt="Logo" class="w-full h-full object-contain rounded-full">
     @else
-        <h1 id="logo-text" class="text-3xl font-bold text-center text-gray-800 px-4 p-2">{{ $titleEn }}</h1>
+        {{-- Այստեղ նույնպես թույլ ենք տալիս տողադարձ --}}
+        <h1 id="logo-text" class="text-3xl font-bold text-center text-gray-800 px-4 p-2">{!! str_replace('|', '<br>', e($titleEn)) !!}</h1>
     @endif
 </div>
 
             <div class="text-center mt-4 w-full">
+            {{-- Title: Փոխարինում ենք | նշանը <br>-ով --}}
             <h1 id="display-title"
                     class="text-2xl tracking-tight drop-shadow-lg font-bold"
                     style="color: {{ $card->title_color ?? '#ffffff' }}; font-weight: 700; display: block; max-width: 100%; line-height: 0.9;">
-                    {{ $titleEn }}
+                    {!! str_replace('|', '<br>', e($titleEn)) !!}
                 </h1>
 
+                {{-- Subtitle: Փոխարինում ենք | նշանը <br>-ով --}}
                 <p id="display-subtitle"
                    class="text-[14px] font-medium tracking-wide px-6"
                    style="color: #ffffff; opacity: 0.8; font-family: 'Mardoto', sans-serif;
@@ -252,7 +256,7 @@ $vcard_link = generateVCard($card);
                           text-overflow: ellipsis;
                           min-height: 2.8em;
                           line-height: 1.4;">
-                    {{ $subtitleEn }}
+                    {!! str_replace('|', '<br>', e($subtitleEn)) !!}
                 </p>
             </div>
         </div>
@@ -394,17 +398,35 @@ $vcard_link = generateVCard($card);
             }
         };
 
+        // Օգնական ֆունկցիա՝ անվտանգ HTML ֆորմատավորման համար
+        function formatText(text) {
+            if (!text) return '';
+            // Պաշտպանում ենք XSS-ից (escapes HTML)
+            let safeText = text.replace(/&/g, "&amp;")
+                               .replace(/</g, "&lt;")
+                               .replace(/>/g, "&gt;")
+                               .replace(/"/g, "&quot;")
+                               .replace(/'/g, "&#039;");
+            // Փոխարինում ենք | նշանը <br>-ով
+            return safeText.replace(/\|/g, '<br>');
+        }
+
         function switchLanguage(lang) {
-            const title = cardData.titles[lang] || cardData.titles['en'] || '';
-            const subtitle = cardData.subtitles[lang] || cardData.subtitles['en'] || '';
+            const titleRaw = cardData.titles[lang] || cardData.titles['en'] || '';
+            const subtitleRaw = cardData.subtitles[lang] || cardData.subtitles['en'] || '';
+
+            // Ձևափոխում ենք տեքստը (escape + replace |)
+            const title = formatText(titleRaw);
+            const subtitle = formatText(subtitleRaw);
 
             const titleEl = document.getElementById('display-title');
             const subtitleEl = document.getElementById('display-subtitle');
             const logoTextEl = document.getElementById('logo-text');
 
-            if(titleEl) titleEl.innerText = title;
-            if(subtitleEl) subtitleEl.innerText = subtitle;
-            if(logoTextEl) logoTextEl.innerText = title;
+            // Օգտագործում ենք innerHTML, որպեսզի <br>-ը աշխատի
+            if(titleEl) titleEl.innerHTML = title;
+            if(subtitleEl) subtitleEl.innerHTML = subtitle;
+            if(logoTextEl) logoTextEl.innerHTML = title;
 
             const shareTextEl = document.getElementById('share-text');
             const saveContactTextEl = document.getElementById('save-contact-text');
