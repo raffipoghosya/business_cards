@@ -195,7 +195,7 @@ $vcard_link = generateVCard($card);
 
     <div class="relative w-full max-w-md mx-auto">
         {{-- Մեծ Կապույտ Ֆոնի Բլոկ --}}
-        <div class="absolute top-0 left-0 right-0 z-0 w-full h-[370px] shadow-2xl"
+        <div class="absolute top-0 left-0 right-0 z-0 w-full h-[380px] shadow-2xl"
              style="background-color: {{ $logo_bg_rgba }};border-bottom-left-radius: 40%; border-bottom-right-radius: 40%;">
         </div>
 
@@ -333,8 +333,7 @@ $vcard_link = generateVCard($card);
     @endif
 </div>
 
-            <div class="my-5 border-t border-gray-700/50"></div>
-
+            <div class="my-12 border-t border-gray-700/50"></div>
 <h2 id="share-text" class="text-xl font-bold text-white text-center mb-6 tracking-widest opacity-90">SHARE MY CARD</h2>
 <div class="flex justify-center gap-4 pb-4">
     <div id="copy-message" class="absolute bg-green-500 text-white px-3 py-1 rounded-lg transition duration-300 opacity-0 transform translate-y-10">
