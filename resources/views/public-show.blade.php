@@ -30,6 +30,7 @@ $vcard_link = generateVCard($card);
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @php
+            // Հիմնական գույների հաշվարկ
             list($r, $g, $b) = sscanf($card->brand_color, "#%02x%02x%02x");
             $logo_bg_rgba = "rgba($r, $g, $b, " . $card->logo_bg_opacity . ")";
             $brand_color = $card->brand_color;
@@ -45,6 +46,14 @@ $vcard_link = generateVCard($card);
 
             list($br, $bg, $bb) = sscanf($bgOverlayHex, "#%02x%02x%02x");
             $bg_overlay_rgba = "rgba($br, $bg, $bb, " . $bgOverlayOpacity . ")";
+            
+            // ՆՈՐ ՀԱՇՎԱՐԿ: «Պահպանել կոնտակտը» կոճակի գույն և թափանցիկություն
+            $contactColorHex = $card->contact_btn_color ?? $card->brand_color; 
+            // opacity-ն գալիս է 0-100 որպես integer, փոխարկում ենք 0.0-1.0
+            $contactOpacity = ($card->contact_btn_opacity ?? 100) / 100;
+
+            list($cr, $cg, $cb) = sscanf($contactColorHex, "#%02x%02x%02x");
+            $contact_btn_rgba = "rgba($cr, $cg, $cb, " . $contactOpacity . ")";
         @endphp
 
         body {
@@ -63,7 +72,7 @@ $vcard_link = generateVCard($card);
         }
 
         .contact-btn {
-            background-color: {{ $card->contact_btn_color ?? $card->brand_color }};
+            background-color: {{ $contact_btn_rgba }}; 
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 9999px;

@@ -132,21 +132,22 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
         <label for="bg_overlay_color" class="block font-semibold text-xl text-black dark:text-black">ընդանուր ֆոնի գույն</label>
+        {{-- $card->...-ը հեռացված է, քանի որ այն չկա create.blade.php-ում --}}
         <input id="bg_overlay_color" type="color" name="bg_overlay_color" 
-               value="{{ old('bg_overlay_color', $card->bg_overlay_color ?? '#151212') }}" 
+               value="{{ old('bg_overlay_color', '#151212') }}" 
                class="block mt-1 w-full h-12 border-gray-300 dark:bg-white focus:border-gray-500 focus:ring-gray-500 rounded-md shadow-sm cursor-pointer">
         <x-input-error :messages="$errors->get('bg_overlay_color')" class="mt-2" />
     </div>
 
     <div>
         <label for="bg_overlay_opacity" id="bg_overlay_opacity_label" class="block font-semibold text-xl text-black dark:text-black">
-            Մգացման թափանցիկություն: {{ old('bg_overlay_opacity', $card->bg_overlay_opacity ?? 0.3) }}
+            Մգացման թափանցիկություն: {{ old('bg_overlay_opacity', 0.3) }}
         </label>
         <input 
             id="bg_overlay_opacity" 
             type="range" 
             name="bg_overlay_opacity" 
-            value="{{ old('bg_overlay_opacity', $card->bg_overlay_opacity ?? 0.3) }}" 
+            value="{{ old('bg_overlay_opacity', 0.3) }}" 
             min="0" max="1" step="0.01" 
             class="block mt-4 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-600"
             oninput="document.getElementById('bg_overlay_opacity_label').innerText = 'Մգացման թափանցիկություն: ' + Number(this.value).toFixed(2)">
@@ -166,24 +167,61 @@
             <div class="flex items-center gap-3 mt-1">
                 <input type="color" id="share_btn_bg_color_picker"
                     class="h-10 w-10 rounded cursor-pointer border-0 p-0"
-                    value="#ffffff"
+                    value="{{ old('share_btn_bg_color', '#ffffff') }}"
                     oninput="document.getElementById('share_btn_bg_color').value = this.value">
                 <x-text-input id="share_btn_bg_color" class="block mt-1 w-full" type="text" name="share_btn_bg_color"
-                    value="#ffffff" />
+                    value="{{ old('share_btn_bg_color', '#ffffff') }}" />
             </div>
         </div>
 
         <div>
             <x-input-label for="share_btn_bg_opacity" :value="__('Share Buttons Fon թափանցիկություն')" />
             <div class="flex items-center gap-4 mt-4">
-                <input type="range" id="share_btn_bg_opacity_range" name="share_btn_bg_opacity" min="0" max="100" value="100"
+                <input type="range" id="share_btn_bg_opacity_range" name="share_btn_bg_opacity" min="0" max="100" value="{{ old('share_btn_bg_opacity', 100) }}"
                     class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                     oninput="document.getElementById('share_btn_bg_opacity_val').innerText = this.value + '%'">
-                <span id="share_btn_bg_opacity_val" class="text-white font-mono w-12">100%</span>
+                <span id="share_btn_bg_opacity_val" class="text-white font-mono w-12">{{ old('share_btn_bg_opacity', 100) }}%</span>
             </div>
         </div>
     </div>
 </div>
+
+{{-- ՆՈՐ ԲԼՈԿ՝ «Պահպանել կոնտակտը» կոճակի կարգավորումներ --}}
+<div class="bg-gray-800 p-6 rounded-2xl border border-gray-700/50 mb-8">
+    <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        «Պահպանել կոնտակտը» Կոճակի Կարգավորումներ
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <x-input-label for="contact_btn_color" :value="__('Կոճակի Ֆոնի Գույն')" class="text-white"/>
+            <div class="flex items-center gap-3 mt-1">
+                <input type="color" id="contact_btn_color_picker"
+                    class="h-10 w-10 rounded cursor-pointer border-0 p-0"
+                    value="{{ old('contact_btn_color', '#555555') }}" {{-- Լռելյայն գույն --}}
+                    oninput="document.getElementById('contact_btn_color').value = this.value">
+                <x-text-input id="contact_btn_color" class="block mt-1 w-full" type="text" name="contact_btn_color"
+                    value="{{ old('contact_btn_color', '#555555') }}" />
+            </div>
+            <x-input-error :messages="$errors->get('contact_btn_color')" class="mt-2" />
+        </div>
+
+        <div>
+            <x-input-label for="contact_btn_opacity" :value="__('Կոճակի Ֆոնի թափանցիկություն')" class="text-white"/>
+            <div class="flex items-center gap-4 mt-4">
+                <input type="range" id="contact_btn_opacity_range" name="contact_btn_opacity" min="0" max="100"
+                    value="{{ old('contact_btn_opacity', 100) }}" {{-- Լռելյայն 100% --}}
+                    class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    oninput="document.getElementById('contact_btn_opacity_val_create').innerText = this.value + '%'">
+                <span id="contact_btn_opacity_val_create" class="text-white font-mono w-12">
+                    {{ old('contact_btn_opacity', 100) }}%
+                </span>
+            </div>
+            <x-input-error :messages="$errors->get('contact_btn_opacity')" class="mt-2" />
+        </div>
+    </div>
+</div>
+{{-- ՎԵՐՋ: ՆՈՐ ԲԼՈԿ --}}
+
 
                         <hr class="my-8 border-gray-200">
                         <div class="flex items-center border-b border-gray-200 pb-4 mb-6">
@@ -235,6 +273,7 @@
     </div>
     
     <script>
+        // Լոգոյի թափանցիկության ֆունկցիա
         function updateOpacityLabel(value) {
             const formattedValue = Number(value).toFixed(2);
             const label = document.getElementById('logo_bg_opacity_label');
@@ -242,45 +281,28 @@
                 label.innerText = `Լոգոյի ֆոնի թափանցիկություն: ${formattedValue}`;
             }
         }
+
+        // Իկոնկաների թափանցիկության ֆունկցիա
+        function updateIconOpacityLabel(value) {
+            const formattedValue = Number(value).toFixed(2);
+            const label = document.getElementById('icon_bg_opacity_label');
+            if (label) {
+                label.innerText = `Իկոնկաների ֆոնի թափանցիկություն: ${formattedValue}`;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialization for Logo Opacity
             const slider = document.getElementById('logo_bg_opacity');
             if (slider) {
                 updateOpacityLabel(slider.value);
             }
+
+            // Initialization for Icon Opacity
+            const iconSlider = document.getElementById('icon_bg_opacity');
+            if (iconSlider) {
+                updateIconOpacityLabel(iconSlider.value);
+            }
         });
-
-
-    // Լոգոյի թափանցիկության ֆունկցիա
-    function updateOpacityLabel(value) {
-        const formattedValue = Number(value).toFixed(2);
-        const label = document.getElementById('logo_bg_opacity_label');
-        if (label) {
-            label.innerText = `Լոգոյի ֆոնի թափանցիկություն: ${formattedValue}`;
-        }
-    }
-
-    // Իկոնկաների թափանցիկության ֆունկցիա (ՆՈՐ)
-    function updateIconOpacityLabel(value) {
-        const formattedValue = Number(value).toFixed(2);
-        const label = document.getElementById('icon_bg_opacity_label');
-        if (label) {
-            label.innerText = `Իկոնկաների ֆոնի թափանցիկություն: ${formattedValue}`;
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialization for Logo Opacity
-        const slider = document.getElementById('logo_bg_opacity');
-        if (slider) {
-            updateOpacityLabel(slider.value);
-        }
-
-        // Initialization for Icon Opacity (ՆՈՐ)
-        const iconSlider = document.getElementById('icon_bg_opacity');
-        if (iconSlider) {
-            updateIconOpacityLabel(iconSlider.value);
-        }
-    });
-</script>
     </script>
 </x-app-layout>
