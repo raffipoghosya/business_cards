@@ -31,6 +31,7 @@ class BusinessCard extends Model
         'bg_overlay_opacity',
         'background_image_path',
         'links',
+        'contact_btn_color',
     ];
 
     /**

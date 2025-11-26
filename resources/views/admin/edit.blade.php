@@ -214,7 +214,16 @@
             </div>
         </div>
     </div>
+    
 </div>
+
+<div>
+                                <label for="contact_btn_color" class="block font-semibold text-xl text-black dark:text-black">«Պահպանել կոնտակտը» կոճակի գույն</label>
+                                <input id="contact_btn_color" type="color" name="contact_btn_color" 
+                                       value="{{ old('contact_btn_color', $card->contact_btn_color ?? '#555555') }}" {{-- Լռելյայն գույն --}}
+                                       class="block mt-1 w-full h-12 border-gray-300 dark:bg-white focus:border-gray-500 focus:ring-gray-500 rounded-md shadow-sm cursor-pointer">
+                                <x-input-error :messages="$errors->get('contact_btn_color')" class="mt-2" />
+                            </div>
 
 
 

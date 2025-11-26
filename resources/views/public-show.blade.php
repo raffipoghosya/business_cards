@@ -63,7 +63,7 @@ $vcard_link = generateVCard($card);
         }
 
         .contact-btn {
-            background-color: {{ $brand_color }};
+            background-color: {{ $card->contact_btn_color ?? $card->brand_color }};
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 9999px;
