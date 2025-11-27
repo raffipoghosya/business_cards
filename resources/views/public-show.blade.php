@@ -90,11 +90,10 @@ $vcard_link = generateVCard($card);
         ::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 4px; }
 
         /* Դիրքը բարձրացնելու համար նվազեցնում ենք padding-ը */
-        .logo-block { padding-top: 1vh; /* Փոքրացված է 3vh-ից մինչև 1vh */ }
 
         .icon-img {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             filter: brightness(0) invert(1);
         }
         
@@ -242,20 +241,25 @@ $vcard_link = generateVCard($card);
     @endif
 </div>
 
-            <div class="text-center mt-4 w-full">
+            <div class="text-center mt-6 w-full">
             {{-- Title: Փոխարինում ենք | նշանը <br>-ով --}}
             <h1 id="display-title"
-                    class="text-2xl tracking-tight drop-shadow-lg font-bold"
-                    style="color: {{ $card->title_color ?? '#ffffff' }}; font-weight: 700; display: block; max-width: 100%; line-height: 0.9;">
-                    {!! str_replace('|', '<br>', e($titleEn)) !!}
-                </h1>
+    class="text-4xl tracking-wide drop-shadow-lg font-bold"
+    style="color: {{ $card->title_color ?? '#ffffff' }}; 
+           font-weight: 600; 
+           display: block; 
+           max-width: 100%; 
+           line-height: 1.2;
+           font-family: sans-serif;"> 
+    {!! str_replace('|', '<br>', e($titleEn)) !!}
+</h1>
 
                 {{-- Subtitle: Փոխարինում ենք | նշանը <br>-ով --}}
                 <p id="display-subtitle"
-                   class="text-[14px] font-medium tracking-wide px-6"
+                   class="text-[18px] font-medium tracking-wide px-6 mx-auto" {{-- Ավելացվեց mx-auto --}}
                    style="color: #ffffff; opacity: 0.8; font-family: 'Mardoto', sans-serif;
-                          letter-spacing: 0px; margin-top: 0.01rem; margin-left: 23%;
-                          max-width: 29ch;
+                          letter-spacing: 0px; margin-top: 0.09rem; 
+                          max-width: 29ch; {{-- Պահպանում ենք max-width-ը --}}
                           display: -webkit-box;
                           -webkit-box-orient: vertical;
                           overflow: hidden;
@@ -330,12 +334,12 @@ $vcard_link = generateVCard($card);
             @endphp
 
             <a href="{{ $href }}" target="_blank" class="flex flex-col items-center text-decoration-none group">
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-2 transition-transform duration-200 shadow-xl hover:scale-110"
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mt-px-1 transition-transform duration-200 shadow-xl hover:scale-110"
                      style="background-color: {{ $icon_bg_rgba }};">
                     {!! $iconContent !!}
                 </div>
 
-                <span class="text-sm font-bold mt-1 text-center truncate w-full" style="color: #ffffff; ">
+                <span class="text-xs  mt-0 text-center truncate w-full" style="color: #ffffff; line-height: 2.9;letter-spacing: 1.9px;">
                     {{ $label }}
                 </span>
             </a>
@@ -343,7 +347,10 @@ $vcard_link = generateVCard($card);
     @endif
 </div>
 <div class="my-12 border-t border-gray-700/50"></div>
-<h2 id="share-text" class="text-xl font-bold text-white text-center mb-6 tracking-widest opacity-90">SHARE MY CARD</h2>
+<h2 id="share-text" 
+    class="text-xl font-bold text-gray-300 text-center mb-2 tracking-tight opacity-90">
+    SHARE MY CARD
+</h2>
 <div class="flex justify-center gap-4 pb-4">
     <div id="copy-message" class="absolute bg-green-500 text-white px-3 py-1 rounded-lg transition duration-300 opacity-0 transform translate-y-10">
         Հղումը պատճենված է!
@@ -370,12 +377,11 @@ $vcard_link = generateVCard($card);
         <a href="{{ $vcard_link }}" download="{{ $card->slug }}.vcf"
            class="inline-flex items-center justify-center w-full max-w-[280px] contact-btn transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
             <img src="{{ asset('iconsvg/add-user.svg') }}" alt="Add User" class="icon-img mr-3 w-5 h-5" style="filter: brightness(0) invert(1);">
-            <span id="save-contact-text" class="text-xs font-bold uppercase tracking-wide">
+            <span id="save-contact-text" class="text-xs font-bold uppercase tracking-widest">
                 ADD TO CONTACT LIST
             </span>
         </a>
     </div>
-
     <script>
         const cardData = {
             titles: @json($jsData['titles']),
@@ -421,9 +427,23 @@ $vcard_link = generateVCard($card);
             const logoTextEl = document.getElementById('logo-text');
 
             // Օգտագործում ենք innerHTML, որպեսզի <br>-ը աշխատի
-            if(titleEl) titleEl.innerHTML = title;
+            if(titleEl) {
+                titleEl.innerHTML = title;
+                
+                // Տառաչափի կառավարում՝ հիմնված լեզվի վրա
+                if (lang === 'en') {
+                    // Անգլերենի համար ավելի մեծ տառաչափ
+                    titleEl.classList.remove('text-xl');
+                    titleEl.classList.add('text-xl');
+                } else {
+                    // Մյուս լեզուների համար ստանդարտ տառաչափ
+                    titleEl.classList.remove('text-2xl');
+                    titleEl.classList.add('text-xl');
+                }
+            }
             if(subtitleEl) subtitleEl.innerHTML = subtitle;
             if(logoTextEl) logoTextEl.innerHTML = title;
+
 
             const shareTextEl = document.getElementById('share-text');
             const saveContactTextEl = document.getElementById('save-contact-text');
