@@ -98,6 +98,12 @@ $vcard_link = generateVCard($card);
             filter: brightness(0) invert(1);
         }
         
+        .share-icon-img {
+    /* Փոխարինում ենք այս կոդով՝ Tailwind-ի դասերին գերակայելու համար */
+    width: 24px !important; 
+    height: 24px !important; 
+    filter: brightness(0) invert(1); 
+}
         .fixed-contact-button {
             position: fixed;
             bottom: 0;
@@ -123,7 +129,7 @@ $vcard_link = generateVCard($card);
             font-family: 'Mardoto', sans-serif;
             font-weight: 600;
             /* Փոքրացնում ենք font-size-ը */
-            font-size: 13px; /* Փոքրացված է 15px-ից */ 
+            font-size: 15px; /* Փոքրացված է 15px-ից */ 
             text-transform: uppercase;
             color: #7a7a7a;
             cursor: pointer;
@@ -137,7 +143,7 @@ $vcard_link = generateVCard($card);
         }
 
         .lang-btn.active {
-            color: #ffffff;
+            color: rgba(255, 255, 255, 0.7);
             font-weight: 700;
         }
 
@@ -336,8 +342,7 @@ $vcard_link = generateVCard($card);
         @endforeach
     @endif
 </div>
-
-            <div class="my-12 border-t border-gray-700/50"></div>
+<div class="my-12 border-t border-gray-700/50"></div>
 <h2 id="share-text" class="text-xl font-bold text-white text-center mb-6 tracking-widest opacity-90">SHARE MY CARD</h2>
 <div class="flex justify-center gap-4 pb-4">
     <div id="copy-message" class="absolute bg-green-500 text-white px-3 py-1 rounded-lg transition duration-300 opacity-0 transform translate-y-10">
@@ -345,28 +350,20 @@ $vcard_link = generateVCard($card);
     </div>
     
     <a href="javascript:void(0);" onclick="handleShare('facebook', '{{ url()->current() }}');"
-       class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-       style="background-color: {{ $share_bg_rgba }};"> 
-       <img src="{{ asset('iconsvg/facebook.svg') }}" alt="Facebook" class="icon-img">
-    </a>
+       class="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110" style="background-color: {{ $share_bg_rgba }};"> 
+       <img src="{{ asset('iconsvg/facebook.svg') }}" alt="Facebook" style="width: 28px; height: 28px; filter: brightness(0) invert(1);"> </a>
 
     <a href="https://wa.me/?text=Check%20out%20my%20digital%20card:%20{{ url()->current() }}" target="_blank"
-       class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-       style="background-color: {{ $share_bg_rgba }};"> 
-       <img src="{{ asset('iconsvg/whatsapp.svg') }}" alt="WhatsApp" class="icon-img">
-    </a>
+       class="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110" style="background-color: {{ $share_bg_rgba }};"> 
+       <img src="{{ asset('iconsvg/whatsapp.svg') }}" alt="WhatsApp" style="width: 28px; height: 28px; filter: brightness(0) invert(1);"> </a>
 
     <a href="javascript:void(0);" onclick="handleShare('instagram', '{{ url()->current() }}');"
-       class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-       style="background-color: {{ $share_bg_rgba }};"> 
-       <img src="{{ asset('iconsvg/instagram.svg') }}" alt="Instagram" class="icon-img">
-    </a>
+       class="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110" style="background-color: {{ $share_bg_rgba }};"> 
+       <img src="{{ asset('iconsvg/instagram.svg') }}" alt="Instagram" style="width: 28px; height: 28px; filter: brightness(0) invert(1);"> </a>
 
     <a href="sms:?body=Check%20out%20my%20digital%20card:%20{{ url()->current() }}"
-       class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110"
-       style="background-color: {{ $share_bg_rgba }};"> 
-       <img src="{{ asset('iconsvg/sms.svg') }}" alt="SMS" class="icon-img">
-    </a>
+       class="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform duration-200 shadow-xl hover:scale-110" style="background-color: {{ $share_bg_rgba }};"> 
+       <img src="{{ asset('iconsvg/sms.svg') }}" alt="SMS" style="width: 28px; height: 28px; filter: brightness(0) invert(1);"></a>
 </div>
 
     <div class="fixed-contact-button text-center">
